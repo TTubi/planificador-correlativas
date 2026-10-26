@@ -123,7 +123,6 @@ tests/
 
 ## Próximos pasos
 
-- Diseño visual.
 - Deploy con una demo online.
 
 Fuera del alcance por ahora: login, cálculo de cuatrimestres restantes, equivalencias, Trabajo Final Integrador y otras carreras.

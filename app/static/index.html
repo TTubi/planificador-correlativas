@@ -9,12 +9,19 @@
 <body>
     <header>
         <h1>Planificador de Correlativas</h1>
-        <p>Tecnicatura Universitaria en Programación · Plan 2024</p>
+        <p class="carrera">Tecnicatura Universitaria en Programación · Plan 2024</p>
         <p class="ayuda">Marcá qué materias tenés regulares o aprobadas. Tu progreso se guarda en este navegador.</p>
     </header>
 
     <!-- aria-live hace que los lectores de pantalla anuncien los cambios del resumen. -->
     <section id="resumen" aria-live="polite"></section>
+
+    <ul class="leyenda" aria-label="Qué significa cada color">
+        <li class="cursable">Podés cursarla</li>
+        <li class="rendible">Podés rendirla</li>
+        <li class="bloqueada">Bloqueada</li>
+        <li class="aprobada">Aprobada</li>
+    </ul>
 
     <main id="plan">
         <p class="mensaje">Cargando el plan…</p>
