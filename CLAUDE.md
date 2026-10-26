@@ -55,7 +55,7 @@ app/
 ├── routes/                 # endpoints: health, plan (GET /api/plan), llaves (GET /api/llaves), evaluacion (POST /api/evaluacion)
 │   └── dependencias.py     # obtener_plan(), reemplazable en los tests
 ├── schemas/                # modelos Pydantic de la API
-├── static/                 # frontend: index.html, estilos.css, app.js
+├── static/                 # frontend: index.html, estilos.css, app.js (módulo) y compartir.js (lógica pura del link)
 ├── services/
 │   ├── plan.py             # Materia y validación del plan (ciclos, referencias)
 │   ├── correlativas.py     # lógica pura: evaluar_plan()
@@ -69,7 +69,7 @@ data/tup_plan2024.json      # fuente de verdad del plan (Ordenanza 2019/2023 CS 
 scripts/cargar_plan.py      # genera planificador.db desde el JSON
 .github/workflows/tests.yml # corre pytest en GitHub Actions
 .python-version             # versión de Python: la leen Vercel y GitHub Actions
-tests/
+tests/                      # pytest; tests/js/ con node --test para compartir.js
 ```
 
 Principios:
@@ -77,6 +77,7 @@ Principios:
 - `services/` contiene funciones puras: no leen la base, archivos ni HTTP.
 - La base `planificador.db` es un archivo generado y está en `.gitignore`. La fuente de verdad es el JSON. La app la regenera al arrancar (`lifespan` en `main.py`); `scripts/cargar_plan.py` hace lo mismo a mano. Su ruta se puede cambiar con la variable de entorno `PLANIFICADOR_DB` (en Vercel: `/tmp/planificador.db`).
 - El progreso del alumno se guarda en su navegador (`localStorage`). El backend no guarda datos personales ni tiene login.
+- Para compartirlo, el progreso viaja en el fragmento del link (`#progreso=1a8,2a,3r`), que no llega al servidor. Quien abre el link lo ve en solo lectura y no se toca su `localStorage`.
 
 ## Reglas del dominio
 
@@ -93,6 +94,7 @@ Principios:
 pip install -r requirements.txt
 python -m scripts.cargar_plan
 python -m pytest
+node --test "tests/js/*.test.mjs"
 uvicorn app.main:app --reload
 ```
 
@@ -112,9 +114,10 @@ Hecho:
 10. Deploy en Vercel: <https://planificador-correlativas.vercel.app/>. La base se genera sola al arrancar, su ruta se configura con `PLANIFICADOR_DB` (en Vercel, `/tmp/planificador.db`), la versión de Python está en `.python-version` y el README explica el deploy. Cada push a `main` publica una versión nueva.
 11. Progreso: `calcular_progreso()` devuelve el porcentaje de la carrera y el promedio. Nota opcional por materia aprobada, guardada en `localStorage`. `POST /api/evaluacion` acepta `notas` y devuelve `progreso`.
 12. Feedback: `mensaje_de_avance()` arma un mensaje cercano y motivador (voseo, nunca reta) según cuánto falta y el promedio. `POST /api/evaluacion` lo devuelve en `mensaje` y el frontend lo muestra arriba del resumen.
+13. Compartir el progreso: botón que arma un link con el avance (`compartir.js`, con tests en `tests/js/` que corren en GitHub Actions). En el celular usa el menú nativo de compartir; en la compu copia el link. El link se abre en modo solo lectura.
 
 Siguiente:
 
-13. Lanzamiento: post en LinkedIn (a cargo de Agustín).
+14. Lanzamiento: post en LinkedIn (a cargo de Agustín).
 
 Queda fuera del MVP: promedio con aplazos (posible mejora futura), login, cálculo de cuatrimestres restantes, equivalencias, Trabajo Final Integrador (se agrega como caso especial más adelante), tabla `carreras` (se agrega cuando haya una segunda carrera) e IA.

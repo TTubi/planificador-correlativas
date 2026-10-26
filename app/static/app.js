@@ -5,6 +5,8 @@
 // POST /api/evaluacion, que ya tiene tests. El navegador solo guarda el
 // estado del alumno y muestra el resultado.
 
+import { leerProgresoDeLink, linkDeProgreso } from "./compartir.js";
+
 const NOMBRES_NIVEL = { 1: "Primer año", 2: "Segundo año" };
 const OPCIONES_ESTADO = [
     ["pendiente", "Pendiente"],
@@ -21,6 +23,9 @@ const NOTAS_POSIBLES = [6, 7, 8, 9, 10];
 let estados = {};
 // Número de materia aprobada → nota. Es opcional: puede no estar.
 let notas = {};
+// true si la página se abrió desde un link compartido: se muestra ese
+// progreso en solo lectura y no se toca lo guardado en este navegador.
+let modoCompartido = false;
 let nombrePorNumero = {};
 // Número de materia → qué materias desbloquea (de GET /api/llaves).
 let llavePorNumero = {};
@@ -69,6 +74,9 @@ function leerNotasGuardadas() {
 }
 
 function guardar(clave, valor) {
+    if (modoCompartido) {
+        return;
+    }
     try {
         localStorage.setItem(clave, JSON.stringify(valor));
     } catch {
@@ -138,6 +146,7 @@ function crearSelectorEstado(materia, selectorNota) {
         selector.append(new Option(texto, valor));
     }
     selector.value = estados[materia.numero] ?? "pendiente";
+    selector.disabled = modoCompartido;
 
     selector.addEventListener("change", () => {
         if (selector.value === "pendiente") {
@@ -168,6 +177,7 @@ function crearSelectorNota(materia) {
     }
     selector.value = notas[materia.numero] ?? "";
     selector.hidden = estados[materia.numero] !== "aprobada";
+    selector.disabled = modoCompartido;
 
     selector.addEventListener("change", () => {
         if (selector.value === "") {
@@ -328,6 +338,32 @@ function mostrarMensaje(contenedor, texto) {
     contenedor.replaceChildren(mensaje);
 }
 
+// --- Compartir --------------------------------------------------------------
+
+// En el celular abre el menú de compartir del sistema (WhatsApp, etc.).
+// En la compu, donde casi nunca existe ese menú, copia el link.
+async function compartir() {
+    const link = linkDeProgreso(window.location, estados, notas);
+    const boton = document.getElementById("compartir");
+
+    if (navigator.share) {
+        try {
+            await navigator.share({ title: "Mi progreso en la TUP", url: link });
+        } catch {
+            // El usuario cerró el menú sin compartir: no es un error.
+        }
+        return;
+    }
+    try {
+        await navigator.clipboard.writeText(link);
+        boton.textContent = "¡Link copiado!";
+        setTimeout(() => (boton.textContent = "Compartir mi progreso"), 2000);
+    } catch {
+        // Sin permiso para el portapapeles: se muestra el link para copiarlo a mano.
+        window.prompt("Copiá este link para compartir tu progreso:", link);
+    }
+}
+
 // --- Inicio -----------------------------------------------------------------
 
 async function iniciar() {
@@ -341,13 +377,30 @@ async function iniciar() {
         for (const llave of llaves.materias) {
             llavePorNumero[llave.numero] = llave;
         }
-        estados = leerEstadosGuardados(new Set(materias.map((m) => m.numero)));
-        notas = leerNotasGuardadas();
+        const numerosValidos = new Set(materias.map((m) => m.numero));
+        const compartido = leerProgresoDeLink(window.location.hash, numerosValidos);
+        if (compartido) {
+            modoCompartido = true;
+            ({ estados, notas } = compartido);
+            document.getElementById("aviso-compartido").hidden = false;
+            // "Marcá qué materias tenés..." no aplica: acá no se puede editar.
+            document.querySelector("header .ayuda").hidden = true;
+        } else {
+            estados = leerEstadosGuardados(numerosValidos);
+            notas = leerNotasGuardadas();
+            const boton = document.getElementById("compartir");
+            boton.hidden = false;
+            boton.addEventListener("click", compartir);
+        }
         mostrarPlan(materias);
         await evaluar();
     } catch (error) {
         mostrarMensaje(document.getElementById("plan"), `No se pudo cargar el plan (${error.message}).`);
     }
 }
+
+// Si se pega otro link compartido en la misma pestaña, cambia solo el
+// fragmento (#...) y el navegador no recarga: se recarga a mano.
+window.addEventListener("hashchange", () => window.location.reload());
 
 iniciar();

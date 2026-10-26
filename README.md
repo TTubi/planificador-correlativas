@@ -18,6 +18,7 @@ App web para estudiantes de la **Tecnicatura Universitaria en Programación (UTN
   - 🟧 Bloqueada, con la lista exacta de lo que falta. Por ejemplo: "Para cursar falta: Programación II (regular)".
 - **Tu avance en la carrera:** el porcentaje completado (por cantidad de materias aprobadas) y tu promedio. La nota de cada materia aprobada es opcional, y el promedio es sin aplazos: solo cuenta las notas con las que aprobaste.
 - **Feedback motivador:** un mensaje según cuánto te falta y tu promedio. Por ejemplo: "¡Te faltan solo 2 materias! Metele un último esfuerzo 💪 Y con un promedio de 8,67, ¡excelente!"
+- **Compartí tu progreso:** un botón genera un link con tu avance (en el celular abre el menú para mandarlo por WhatsApp). Quien lo abre lo ve en modo solo lectura, sin que se modifique su propio progreso.
 - **Materias llave:** cuántas materias desbloquea cada una, directamente y en cadena. Por ejemplo, Programación I y Matemática desbloquean 10 de las 17.
 - **Sin cuentas ni login:** tu progreso se guarda en tu navegador (`localStorage`). El servidor no guarda datos personales.
 
@@ -73,10 +74,11 @@ Al arrancar, la app valida el JSON del plan y genera la base `planificador.db`. 
 ### Tests
 
 ```bash
-python -m pytest
+python -m pytest                      # backend (Python)
+node --test "tests/js/*.test.mjs"     # lógica del frontend (JavaScript)
 ```
 
-Los tests no necesitan la base generada: los de la API arman una base temporal propia.
+Los tests no necesitan la base generada: los de la API arman una base temporal propia. Los de JavaScript usan el runner que trae Node 22 y no necesitan instalar paquetes.
 
 ### Configuración
 
@@ -151,10 +153,10 @@ app/
 ├── schemas/             # modelos Pydantic: el contrato de la API
 ├── services/            # lógica pura: correlativas, materias llave, progreso, feedback y validación del plan
 ├── database/            # esquema SQLite y el único módulo con SQL
-└── static/              # frontend: index.html, estilos.css, app.js
+└── static/              # frontend: index.html, estilos.css, app.js y compartir.js
 data/tup_plan2024.json   # fuente de verdad del plan de estudios
 scripts/cargar_plan.py   # valida el plan y genera la base
-tests/
+tests/                   # tests de Python, y tests/js/ con los de JavaScript
 .python-version          # versión de Python (la usan Vercel y GitHub Actions)
 ```
 
@@ -164,7 +166,7 @@ tests/
 - **El JSON es la fuente de verdad.** La base SQLite es un archivo generado y no se versiona. Al cargarla, el plan se valida: referencias a materias inexistentes, nombres repetidos y correlativas circulares (con búsqueda en profundidad sobre el grafo de correlativas).
 - **SQL a mano, en un solo módulo.** Sin ORM, para entender qué pasa con la base. Las restricciones (`CHECK`, `FOREIGN KEY`) repiten algunas validaciones de Python, así la base tampoco acepta datos sin sentido.
 - **Las reglas viven en un solo lugar.** El frontend no recalcula correlativas: le pregunta a la API. Así no hay dos implementaciones que puedan diferir.
-- **Sin datos personales en el servidor.** El progreso queda en el navegador del alumno.
+- **Sin datos personales en el servidor.** El progreso queda en el navegador del alumno. Al compartirlo, viaja en el fragmento del link (lo que va después del `#`), que el navegador nunca le manda al servidor.
 
 ## Fuera del alcance
 

@@ -169,12 +169,21 @@ def test_la_raiz_sirve_el_frontend(cliente):
     respuesta = cliente.get("/")
     assert respuesta.status_code == 200
     assert "text/html" in respuesta.headers["content-type"]
-    assert '<script src="app.js"' in respuesta.text
+    assert '<script type="module" src="app.js"' in respuesta.text
 
 
 def test_sirve_los_archivos_del_frontend(cliente):
     assert cliente.get("/app.js").status_code == 200
     assert cliente.get("/estilos.css").status_code == 200
+
+
+@pytest.mark.parametrize("archivo", ["/app.js", "/compartir.js"])
+def test_los_modulos_js_se_sirven_como_javascript(cliente, archivo):
+    # El navegador se niega a ejecutar un <script type="module"> si el
+    # servidor no lo manda con un tipo de contenido de JavaScript.
+    respuesta = cliente.get(archivo)
+    assert respuesta.status_code == 200
+    assert "javascript" in respuesta.headers["content-type"]
 
 
 def test_la_api_no_queda_tapada_por_el_frontend(cliente):
