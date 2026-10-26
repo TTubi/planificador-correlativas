@@ -17,6 +17,7 @@ App web para estudiantes de la **Tecnicatura Universitaria en Programación (UTN
   - 🟦 Podés rendirla.
   - 🟧 Bloqueada, con la lista exacta de lo que falta. Por ejemplo: "Para cursar falta: Programación II (regular)".
 - **Tu avance en la carrera:** el porcentaje completado (por cantidad de materias aprobadas) y tu promedio. La nota de cada materia aprobada es opcional, y el promedio es sin aplazos: solo cuenta las notas con las que aprobaste.
+- **Feedback motivador:** un mensaje según cuánto te falta y tu promedio. Por ejemplo: "¡Te faltan solo 2 materias! Metele un último esfuerzo 💪 Y con un promedio de 8,67, ¡excelente!"
 - **Materias llave:** cuántas materias desbloquea cada una, directamente y en cadena. Por ejemplo, Programación I y Matemática desbloquean 10 de las 17.
 - **Sin cuentas ni login:** tu progreso se guarda en tu navegador (`localStorage`). El servidor no guarda datos personales.
 
@@ -134,10 +135,11 @@ Content-Type: application/json
 
 Las materias que no aparecen se consideran pendientes. `notas` es opcional: solo admite materias aprobadas y notas enteras del 6 al 10. Una materia inexistente, un estado inválido o una nota que no cumple esas reglas devuelven `422`.
 
-La respuesta incluye, además de cada materia, el progreso:
+La respuesta incluye, además de cada materia, el progreso y un mensaje de feedback:
 
 ```json
-"progreso": { "aprobadas": 2, "total": 17, "porcentaje": 11, "promedio": 7.5, "notas_cargadas": 2 }
+"progreso": { "aprobadas": 2, "total": 17, "porcentaje": 11, "promedio": 7.5, "notas_cargadas": 2 },
+"mensaje": "Vas sumando: ya tenés el 11% de la carrera. ¡Paso a paso! Tu promedio es 7,5, ¡muy bien!"
 ```
 
 ## Estructura
@@ -147,7 +149,7 @@ app/
 ├── main.py              # crea la app, registra los routers y sirve el frontend
 ├── routes/              # endpoints HTTP
 ├── schemas/             # modelos Pydantic: el contrato de la API
-├── services/            # lógica pura: correlativas, materias llave, validación del plan
+├── services/            # lógica pura: correlativas, materias llave, progreso, feedback y validación del plan
 ├── database/            # esquema SQLite y el único módulo con SQL
 └── static/              # frontend: index.html, estilos.css, app.js
 data/tup_plan2024.json   # fuente de verdad del plan de estudios

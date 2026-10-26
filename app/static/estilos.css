@@ -157,6 +157,19 @@ header .ayuda {
     grid-column: 1 / -1;
 }
 
+/* Mensaje de feedback: ocupa todo el ancho, arriba de las tarjetas. */
+.feedback {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 12px 16px;
+    font-weight: 600;
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-left: 5px solid var(--acento);
+    border-radius: var(--radio);
+    box-shadow: var(--sombra);
+}
+
 /* --- Leyenda --------------------------------------------------------------- */
 
 .leyenda {

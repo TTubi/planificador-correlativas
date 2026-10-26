@@ -58,3 +58,5 @@ class ResultadoEvaluacion(BaseModel):
 
     materias: list[EvaluacionSchema]
     progreso: ProgresoSchema
+    # Feedback para el alumno según su avance y su promedio.
+    mensaje: str

@@ -60,7 +60,8 @@ app/
 │   ├── plan.py             # Materia y validación del plan (ciclos, referencias)
 │   ├── correlativas.py     # lógica pura: evaluar_plan()
 │   ├── llaves.py           # lógica pura: calcular_llaves()
-│   └── progreso.py         # lógica pura: calcular_progreso() (porcentaje y promedio)
+│   ├── progreso.py         # lógica pura: calcular_progreso() (porcentaje y promedio)
+│   └── feedback.py         # lógica pura: mensaje_de_avance() (mensajes motivadores)
 └── database/
     ├── schema.sql          # tablas materias y correlativas
     └── db.py               # único módulo con SQL
@@ -110,10 +111,10 @@ Hecho:
 9. Diseño visual: colores con variables CSS, modo oscuro, resumen con barra de progreso, leyenda y contraste WCAG AA.
 10. Deploy en Vercel: <https://planificador-correlativas.vercel.app/>. La base se genera sola al arrancar, su ruta se configura con `PLANIFICADOR_DB` (en Vercel, `/tmp/planificador.db`), la versión de Python está en `.python-version` y el README explica el deploy. Cada push a `main` publica una versión nueva.
 11. Progreso: `calcular_progreso()` devuelve el porcentaje de la carrera y el promedio. Nota opcional por materia aprobada, guardada en `localStorage`. `POST /api/evaluacion` acepta `notas` y devuelve `progreso`.
+12. Feedback: `mensaje_de_avance()` arma un mensaje cercano y motivador (voseo, nunca reta) según cuánto falta y el promedio. `POST /api/evaluacion` lo devuelve en `mensaje` y el frontend lo muestra arriba del resumen.
 
 Siguiente:
 
-12. Mensajes de feedback según el porcentaje y el promedio, con tono cercano y motivador (voseo). Calculados en el backend como función pura.
 13. Lanzamiento: post en LinkedIn (a cargo de Agustín).
 
 Queda fuera del MVP: promedio con aplazos (posible mejora futura), login, cálculo de cuatrimestres restantes, equivalencias, Trabajo Final Integrador (se agrega como caso especial más adelante), tabla `carreras` (se agrega cuando haya una segunda carrera) e IA.
