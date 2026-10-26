@@ -220,7 +220,7 @@ def test_sirve_los_archivos_del_frontend(cliente):
     assert cliente.get("/estilos.css").status_code == 200
 
 
-@pytest.mark.parametrize("archivo", ["/app.js", "/compartir.js"])
+@pytest.mark.parametrize("archivo", ["/app.js", "/compartir.js", "/imagen.js"])
 def test_los_modulos_js_se_sirven_como_javascript(cliente, archivo):
     # El navegador se niega a ejecutar un <script type="module"> si el
     # servidor no lo manda con un tipo de contenido de JavaScript.

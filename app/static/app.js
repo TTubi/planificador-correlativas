@@ -6,6 +6,7 @@
 // estado del alumno y muestra el resultado.
 
 import { leerProgresoDeLink, linkDeProgreso } from "./compartir.js";
+import { crearImagenProgreso } from "./imagen.js";
 
 const NOMBRES_NIVEL = { 1: "Primer año", 2: "Segundo año" };
 const OPCIONES_ESTADO = [
@@ -357,11 +358,141 @@ async function compartir() {
     try {
         await navigator.clipboard.writeText(link);
         boton.textContent = "¡Link copiado!";
-        setTimeout(() => (boton.textContent = "Compartir mi progreso"), 2000);
+        setTimeout(() => (boton.textContent = "Compartir progreso"), 2000);
     } catch {
         // Sin permiso para el portapapeles: se muestra el link para copiarlo a mano.
         window.prompt("Copiá este link para compartir tu progreso:", link);
     }
+}
+
+// --- Publicar en LinkedIn ---------------------------------------------------
+
+// Lo que se está armando en el diálogo de publicación.
+const publicacion = { version: 0, versiones: 1, incluirPromedio: false, imagen: null, urlImagen: null };
+
+function avisarPublicacion(texto) {
+    document.getElementById("estado-publicar").textContent = texto;
+}
+
+// Pide el texto al backend (services/publicacion.py) y dibuja la imagen.
+async function actualizarPublicacion() {
+    const datos = await pedirJson("/api/publicacion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            estados,
+            notas,
+            incluir_promedio: publicacion.incluirPromedio,
+            version: publicacion.version,
+        }),
+    });
+    publicacion.version = datos.version;
+    publicacion.versiones = datos.versiones;
+
+    // Si el promedio no suma (o no hay notas), ni se ofrece la opción.
+    if (!datos.puede_incluir_promedio) {
+        publicacion.incluirPromedio = false;
+    }
+    document.getElementById("opcion-promedio").hidden = !datos.puede_incluir_promedio;
+    document.getElementById("incluir-promedio").checked = publicacion.incluirPromedio;
+    document.getElementById("otra-version").hidden = datos.versiones < 2;
+    document.getElementById("texto-publicacion").value = datos.texto;
+
+    const { porcentaje, aprobadas, total, promedio } = datos.progreso;
+    publicacion.imagen = await crearImagenProgreso({
+        porcentaje,
+        aprobadas,
+        total,
+        titular: datos.titular,
+        promedio: publicacion.incluirPromedio ? formatearPromedio(promedio) : null,
+    });
+    // Una URL temporal que apunta a la imagen en memoria, para mostrarla en
+    // el <img>. La anterior se libera para no acumular memoria.
+    if (publicacion.urlImagen) {
+        URL.revokeObjectURL(publicacion.urlImagen);
+    }
+    publicacion.urlImagen = URL.createObjectURL(publicacion.imagen);
+    document.getElementById("vista-imagen").src = publicacion.urlImagen;
+}
+
+async function abrirPublicar() {
+    publicacion.version = 0;
+    avisarPublicacion("");
+    try {
+        await actualizarPublicacion();
+        document.getElementById("dialogo-publicar").showModal();
+    } catch (error) {
+        mostrarMensaje(document.getElementById("resumen"), `No se pudo armar la publicación (${error.message}).`);
+    }
+}
+
+async function refrescarPublicacion() {
+    try {
+        await actualizarPublicacion();
+    } catch (error) {
+        avisarPublicacion(`No se pudo actualizar la publicación (${error.message}).`);
+    }
+}
+
+function descargarImagen() {
+    const enlace = document.createElement("a");
+    enlace.href = publicacion.urlImagen;
+    enlace.download = "mi-progreso-tup.png";
+    enlace.click();
+}
+
+// LinkedIn no deja armar una publicación con imagen y texto desde un link,
+// así que se hace lo más cercano que funciona siempre: se copia el texto y
+// se le pasa la imagen a LinkedIn (en el celular) o se descarga (en la compu).
+//
+// Todo lo que necesita "un clic del usuario" (copiar, compartir, abrir una
+// pestaña) se llama sin esperar (sin await) antes, para que el navegador lo
+// siga considerando parte del clic y no lo bloquee.
+async function publicarEnLinkedIn() {
+    const texto = document.getElementById("texto-publicacion").value;
+    const archivo = new File([publicacion.imagen], "mi-progreso-tup.png", { type: "image/png" });
+    const copiado = navigator.clipboard?.writeText(texto).then(() => true, () => false) ?? Promise.resolve(false);
+
+    if (navigator.canShare?.({ files: [archivo] })) {
+        // Celular: menú de compartir con la imagen. Muchas apps (LinkedIn
+        // incluida) ignoran el texto, por eso también queda copiado.
+        try {
+            const compartido = navigator.share({ files: [archivo], text: texto });
+            avisarPublicacion((await copiado)
+                ? "Elegí LinkedIn. El texto ya está copiado: mantené apretado y pegalo en la publicación."
+                : "Elegí LinkedIn y copiá el texto de arriba para pegarlo en la publicación.");
+            await compartido;
+        } catch {
+            // Se cerró el menú sin compartir: no es un error.
+        }
+        return;
+    }
+
+    // Compu: se descarga la imagen y se abre LinkedIn en otra pestaña.
+    descargarImagen();
+    window.open("https://www.linkedin.com/feed/", "_blank", "noopener");
+    avisarPublicacion((await copiado)
+        ? "Listo: se descargó la imagen y se copió el texto. En LinkedIn tocá «Comenzar una publicación», pegá el texto (Ctrl+V) y adjuntá la imagen."
+        : "Se descargó la imagen. Copiá el texto de arriba, pegalo en LinkedIn y adjuntá la imagen.");
+}
+
+function prepararPublicar() {
+    const boton = document.getElementById("publicar");
+    boton.hidden = false;
+    boton.addEventListener("click", abrirPublicar);
+
+    document.getElementById("otra-version").addEventListener("click", () => {
+        publicacion.version = (publicacion.version + 1) % publicacion.versiones;
+        refrescarPublicacion();
+    });
+    document.getElementById("incluir-promedio").addEventListener("change", (evento) => {
+        publicacion.incluirPromedio = evento.target.checked;
+        refrescarPublicacion();
+    });
+    document.getElementById("publicar-linkedin").addEventListener("click", publicarEnLinkedIn);
+    document.getElementById("cerrar-publicar").addEventListener("click", () => {
+        document.getElementById("dialogo-publicar").close();
+    });
 }
 
 // --- Inicio -----------------------------------------------------------------
@@ -391,6 +522,7 @@ async function iniciar() {
             const boton = document.getElementById("compartir");
             boton.hidden = false;
             boton.addEventListener("click", compartir);
+            prepararPublicar();
         }
         mostrarPlan(materias);
         await evaluar();

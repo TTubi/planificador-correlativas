@@ -11,8 +11,34 @@
         <h1>Planificador de Correlativas</h1>
         <p class="carrera">Tecnicatura Universitaria en Programación · Plan 2024</p>
         <p class="ayuda">Marcá qué materias tenés regulares o aprobadas. Tu progreso se guarda en este navegador.</p>
-        <button id="compartir" type="button" hidden>Compartir mi progreso</button>
+        <div class="acciones">
+            <button id="compartir" type="button" hidden>Compartir progreso</button>
+            <button id="publicar" type="button" hidden>Publicar progreso</button>
+        </div>
     </header>
+
+    <!-- <dialog> es una ventana modal nativa: con showModal() bloquea el resto
+         de la página y se cierra con Esc, sin código extra. -->
+    <dialog id="dialogo-publicar" aria-labelledby="titulo-publicar">
+        <h2 id="titulo-publicar">Publicar en LinkedIn</h2>
+        <img id="vista-imagen" alt="Imagen con tu progreso en la carrera, para la publicación">
+        <label for="texto-publicacion">Texto de la publicación (lo podés editar)</label>
+        <textarea id="texto-publicacion" rows="9"></textarea>
+        <label id="opcion-promedio" class="opcion" hidden>
+            <input type="checkbox" id="incluir-promedio"> Incluir mi promedio
+        </label>
+        <p class="consejo">
+            Para etiquetar al creador de la app, escribí <strong>@Agustín Singh</strong> en LinkedIn y elegilo de la lista.
+        </p>
+        <p id="estado-publicar" class="estado" aria-live="polite"></p>
+        <div class="botones">
+            <!-- autofocus: al abrir, el foco va acá y no al cuadro de texto,
+                 que en el celular abriría el teclado y taparía la imagen. -->
+            <button type="button" id="publicar-linkedin" autofocus>Publicar en LinkedIn</button>
+            <button type="button" id="otra-version" class="secundario">Otra versión</button>
+            <button type="button" id="cerrar-publicar" class="secundario">Cerrar</button>
+        </div>
+    </dialog>
 
     <!-- Solo se muestra al abrir un link compartido. -->
     <p id="aviso-compartido" class="aviso" hidden>
