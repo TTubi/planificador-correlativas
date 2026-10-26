@@ -5,7 +5,7 @@ from app.schemas.evaluacion import EstadoAlumno, ResultadoEvaluacion
 from app.services.correlativas import evaluar_plan
 from app.services.plan import Materia
 
-router = APIRouter(prefix="/api")
+router = APIRouter(prefix="/api", tags=["Evaluación"])
 
 
 def obtener_plan() -> list[Materia]:
