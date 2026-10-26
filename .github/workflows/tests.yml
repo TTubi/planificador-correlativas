@@ -33,3 +33,21 @@ jobs:
 
       - name: Correr los tests
         run: python -m pytest
+
+  # Tests del JavaScript del frontend que es lógica pura (app/static/compartir.js).
+  # Usan el runner que trae Node, sin instalar paquetes. Alcanza con Linux:
+  # ese código no depende del sistema operativo.
+  node-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v5
+
+      - name: Instalar Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Correr los tests de JavaScript
+        run: node --test "tests/js/*.test.mjs"
