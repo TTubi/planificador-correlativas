@@ -1,0 +1,35 @@
+# Corre los tests automáticamente en GitHub.
+# Se ejecuta en cada PR y en cada push a main, así nada entra a main sin
+# que los tests hayan pasado.
+
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  pytest:
+    # Se prueba en Windows (donde se desarrolla) y en Linux (donde
+    # normalmente se publica una app web).
+    strategy:
+      matrix:
+        sistema: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.sistema }}
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v5
+
+      - name: Instalar Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Correr los tests
+        run: python -m pytest

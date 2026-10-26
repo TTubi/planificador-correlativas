@@ -65,6 +65,7 @@ app/
     └── db.py               # único módulo con SQL
 data/tup_plan2024.json      # fuente de verdad del plan (Ordenanza 2019/2023 CS UTN)
 scripts/cargar_plan.py      # genera planificador.db desde el JSON
+.github/workflows/tests.yml # corre pytest en GitHub Actions
 tests/
 ```
 
@@ -101,10 +102,10 @@ Hecho:
 4. API: `POST /api/evaluacion` recibe `{"estados": {"1": "aprobada"}}` y devuelve `evaluar_plan()`. Esquemas Pydantic, `/health` en `routes/` y tests con `TestClient`.
 5. Frontend: `GET /api/plan`, plan por año servido por FastAPI, selector de estado por materia guardado en `localStorage` y resultado de `/api/evaluacion` (cursable, rendible, bloqueada y qué falta).
 6. Materias llave: `calcular_llaves()` y `GET /api/llaves` dicen cuántas materias desbloquea cada una, directamente y en total. Cada tarjeta lo muestra.
+7. GitHub Actions (`.github/workflows/tests.yml`): `pytest` corre en cada PR y en cada push a `main`, en Windows y en Linux.
 
 Siguiente:
 
-7. GitHub Actions: correr `pytest` automáticamente en cada PR y en cada push a `main`. Es lo próximo porque, como los PRs se integran sin revisión previa, los tests automáticos son el control de calidad antes de cada merge.
 8. Diseño y README.
 9. Deploy y lanzamiento.
 
