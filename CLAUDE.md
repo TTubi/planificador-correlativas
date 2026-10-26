@@ -47,13 +47,14 @@ Frená y preguntá **solo** en estos casos:
 ```
 app/
 ├── main.py                 # app FastAPI: registra los routers y monta el frontend
-├── routes/                 # endpoints: health, plan (GET /api/plan), evaluacion (POST /api/evaluacion)
+├── routes/                 # endpoints: health, plan (GET /api/plan), llaves (GET /api/llaves), evaluacion (POST /api/evaluacion)
 │   └── dependencias.py     # obtener_plan(), reemplazable en los tests
 ├── schemas/                # modelos Pydantic de la API
 ├── static/                 # frontend: index.html, estilos.css, app.js
 ├── services/
 │   ├── plan.py             # Materia y validación del plan (ciclos, referencias)
-│   └── correlativas.py     # lógica pura: evaluar_plan()
+│   ├── correlativas.py     # lógica pura: evaluar_plan()
+│   └── llaves.py           # lógica pura: calcular_llaves()
 └── database/
     ├── schema.sql          # tablas materias y correlativas
     └── db.py               # único módulo con SQL
@@ -94,10 +95,10 @@ Hecho:
 3. Lógica de cursar, rendir y faltantes, con tests.
 4. API: `POST /api/evaluacion` recibe `{"estados": {"1": "aprobada"}}` y devuelve `evaluar_plan()`. Esquemas Pydantic, `/health` en `routes/` y tests con `TestClient`.
 5. Frontend: `GET /api/plan`, plan por año servido por FastAPI, selector de estado por materia guardado en `localStorage` y resultado de `/api/evaluacion` (cursable, rendible, bloqueada y qué falta).
+6. Materias llave: `calcular_llaves()` y `GET /api/llaves` dicen cuántas materias desbloquea cada una, directamente y en total. Cada tarjeta lo muestra.
 
 Siguiente:
 
-6. Materias llave: cuántas materias desbloquea cada una, directa e indirectamente.
 7. Diseño, README y GitHub Actions.
 8. Deploy y lanzamiento.
 

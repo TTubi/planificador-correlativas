@@ -17,6 +17,8 @@ const CLAVE_GUARDADO = "planificador-correlativas:estados";
 // Las pendientes no se guardan, igual que espera la API.
 let estados = {};
 let nombrePorNumero = {};
+// Número de materia → qué materias desbloquea (de GET /api/llaves).
+let llavePorNumero = {};
 // Número del último pedido de evaluación. Sirve para descartar respuestas
 // viejas si el alumno cambia varias materias rápido.
 let ultimoPedido = 0;
@@ -94,6 +96,17 @@ function textoRequisitos(materia) {
     return partes.length > 0 ? partes.join(" · ") : "Sin correlativas";
 }
 
+// Arma el texto de materia llave, por ejemplo:
+// "Desbloquea 5 directamente · 10 en total"
+function textoLlave(numero) {
+    const llave = llavePorNumero[numero];
+    const total = llave.desbloquea_en_total.length;
+    if (total === 0) {
+        return "No desbloquea otras materias";
+    }
+    return `Desbloquea ${llave.desbloquea_directamente.length} directamente · ${total} en total`;
+}
+
 function crearSelectorEstado(materia) {
     const selector = document.createElement("select");
     selector.setAttribute("aria-label", `Estado de ${materia.nombre}`);
@@ -129,11 +142,17 @@ function crearTarjeta(materia) {
     requisitos.className = "requisitos";
     requisitos.textContent = textoRequisitos(materia);
 
+    const llave = document.createElement("p");
+    llave.className = llavePorNumero[materia.numero].desbloquea_en_total.length > 0 ? "llave" : "llave ninguna";
+    llave.textContent = textoLlave(materia.numero);
+    // Al pasar el mouse se ven los nombres de todas las que desbloquea.
+    llave.title = llavePorNumero[materia.numero].desbloquea_en_total.map((n) => nombrePorNumero[n]).join(", ");
+
     // Se completa cuando llega la respuesta de /api/evaluacion.
     const resultado = document.createElement("p");
     resultado.className = "resultado";
 
-    tarjeta.append(titulo, crearSelectorEstado(materia), requisitos, resultado);
+    tarjeta.append(titulo, crearSelectorEstado(materia), requisitos, llave, resultado);
     return tarjeta;
 }
 
@@ -207,9 +226,14 @@ function mostrarMensaje(contenedor, texto) {
 
 async function iniciar() {
     try {
-        const { materias } = await pedirJson("/api/plan");
+        // Los dos pedidos son independientes: se lanzan juntos y se espera a ambos.
+        const [plan, llaves] = await Promise.all([pedirJson("/api/plan"), pedirJson("/api/llaves")]);
+        const materias = plan.materias;
         for (const materia of materias) {
             nombrePorNumero[materia.numero] = materia.nombre;
+        }
+        for (const llave of llaves.materias) {
+            llavePorNumero[llave.numero] = llave;
         }
         estados = leerEstadosGuardados(new Set(materias.map((m) => m.numero)));
         mostrarPlan(materias);

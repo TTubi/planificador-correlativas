@@ -80,6 +80,20 @@ header .ayuda {
     color: #52606d;
 }
 
+.llave {
+    margin: 4px 0 0;
+    font-size: 0.8rem;
+    color: #7b8794;
+}
+
+.llave::before {
+    content: "🔑 ";
+}
+
+.llave.ninguna::before {
+    content: none;
+}
+
 .resultado {
     margin: 8px 0 0;
     font-size: 0.875rem;
