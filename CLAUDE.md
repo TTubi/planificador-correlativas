@@ -103,10 +103,11 @@ Hecho:
 5. Frontend: `GET /api/plan`, plan por año servido por FastAPI, selector de estado por materia guardado en `localStorage` y resultado de `/api/evaluacion` (cursable, rendible, bloqueada y qué falta).
 6. Materias llave: `calcular_llaves()` y `GET /api/llaves` dicen cuántas materias desbloquea cada una, directamente y en total. Cada tarjeta lo muestra.
 7. GitHub Actions (`.github/workflows/tests.yml`): `pytest` corre en cada PR y en cada push a `main`, en Windows y en Linux.
+8. README con captura, cómo correrlo, API y decisiones de diseño.
 
 Siguiente:
 
-8. Diseño y README.
-9. Deploy y lanzamiento.
+9. Diseño visual (y actualizar `docs/captura.png` del README).
+10. Deploy y lanzamiento.
 
 Queda fuera del MVP: login, cálculo de cuatrimestres restantes, equivalencias, Trabajo Final Integrador (se agrega como caso especial más adelante), tabla `carreras` (se agrega cuando haya una segunda carrera) e IA.
