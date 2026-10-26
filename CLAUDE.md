@@ -104,10 +104,10 @@ Hecho:
 6. Materias llave: `calcular_llaves()` y `GET /api/llaves` dicen cuántas materias desbloquea cada una, directamente y en total. Cada tarjeta lo muestra.
 7. GitHub Actions (`.github/workflows/tests.yml`): `pytest` corre en cada PR y en cada push a `main`, en Windows y en Linux.
 8. README con captura, cómo correrlo, API y decisiones de diseño.
+9. Diseño visual: colores con variables CSS, modo oscuro, resumen con barra de progreso, leyenda y contraste WCAG AA.
 
 Siguiente:
 
-9. Diseño visual (y actualizar `docs/captura.png` del README).
 10. Deploy y lanzamiento.
 
 Queda fuera del MVP: login, cálculo de cuatrimestres restantes, equivalencias, Trabajo Final Integrador (se agrega como caso especial más adelante), tabla `carreras` (se agrega cuando haya una segunda carrera) e IA.

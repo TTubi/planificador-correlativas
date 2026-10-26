@@ -208,11 +208,45 @@ function mostrarEvaluacion(evaluaciones) {
         tarjeta.querySelector(".resultado").textContent = texto;
     }
 
+    mostrarResumen(evaluaciones);
+}
+
+// Un número grande con su descripción, por ejemplo "4 / materias para cursar".
+function crearDato(clase, valor, descripcion) {
+    const dato = document.createElement("div");
+    dato.className = `dato ${clase}`;
+    const numero = document.createElement("strong");
+    numero.textContent = valor;
+    const texto = document.createElement("span");
+    texto.textContent = descripcion;
+    dato.append(numero, texto);
+    return dato;
+}
+
+function mostrarResumen(evaluaciones) {
     const cuantas = (condicion) => evaluaciones.filter(condicion).length;
-    document.getElementById("resumen").textContent =
-        `Podés cursar ${cuantas((e) => e.puede_cursar)} · ` +
-        `Podés rendir ${cuantas((e) => e.puede_rendir)} · ` +
-        `Aprobadas ${cuantas((e) => e.estado === "aprobada")} de ${evaluaciones.length}`;
+    const aprobadas = cuantas((e) => e.estado === "aprobada");
+    const total = evaluaciones.length;
+
+    // Barra de progreso de la carrera. Los atributos role y aria-* le dicen
+    // a los lectores de pantalla qué representa y cuánto vale.
+    const barra = document.createElement("div");
+    barra.className = "progreso";
+    barra.setAttribute("role", "progressbar");
+    barra.setAttribute("aria-label", "Materias aprobadas");
+    barra.setAttribute("aria-valuemin", 0);
+    barra.setAttribute("aria-valuemax", total);
+    barra.setAttribute("aria-valuenow", aprobadas);
+    const relleno = document.createElement("div");
+    relleno.style.width = `${(aprobadas / total) * 100}%`;
+    barra.append(relleno);
+
+    document.getElementById("resumen").replaceChildren(
+        crearDato("cursable", cuantas((e) => e.puede_cursar), "para cursar"),
+        crearDato("rendible", cuantas((e) => e.puede_rendir), "para rendir"),
+        crearDato("aprobada", `${aprobadas}/${total}`, "aprobadas"),
+        barra,
+    );
 }
 
 function mostrarMensaje(contenedor, texto) {
