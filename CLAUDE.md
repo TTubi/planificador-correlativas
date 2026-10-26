@@ -66,13 +66,14 @@ app/
 data/tup_plan2024.json      # fuente de verdad del plan (Ordenanza 2019/2023 CS UTN)
 scripts/cargar_plan.py      # genera planificador.db desde el JSON
 .github/workflows/tests.yml # corre pytest en GitHub Actions
+.python-version             # versión de Python: la leen Vercel y GitHub Actions
 tests/
 ```
 
 Principios:
 
 - `services/` contiene funciones puras: no leen la base, archivos ni HTTP.
-- La base `planificador.db` es un archivo generado y está en `.gitignore`. La fuente de verdad es el JSON. La app la regenera al arrancar (`lifespan` en `main.py`); `scripts/cargar_plan.py` hace lo mismo a mano.
+- La base `planificador.db` es un archivo generado y está en `.gitignore`. La fuente de verdad es el JSON. La app la regenera al arrancar (`lifespan` en `main.py`); `scripts/cargar_plan.py` hace lo mismo a mano. Su ruta se puede cambiar con la variable de entorno `PLANIFICADOR_DB` (en Vercel: `/tmp/planificador.db`).
 - El progreso del alumno se guarda en su navegador (`localStorage`). El backend no guarda datos personales ni tiene login.
 
 ## Reglas del dominio
@@ -108,6 +109,6 @@ Hecho:
 
 Siguiente:
 
-10. Deploy y lanzamiento. Ya resuelto: la base se genera sola al arrancar, así que el servidor no necesita un paso previo. Falta elegir el hosting (requiere que Agustín cree la cuenta) y sumar el link de la demo al README.
+10. Deploy y lanzamiento en Vercel. Ya resuelto: la base se genera sola al arrancar, su ruta se configura con `PLANIFICADOR_DB`, la versión de Python está en `.python-version` y el README explica el deploy. Falta que Agustín cree el proyecto en Vercel y sumar el link de la demo al README.
 
 Queda fuera del MVP: login, cálculo de cuatrimestres restantes, equivalencias, Trabajo Final Integrador (se agrega como caso especial más adelante), tabla `carreras` (se agrega cuando haya una segunda carrera) e IA.
