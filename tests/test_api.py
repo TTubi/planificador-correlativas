@@ -128,6 +128,49 @@ def test_una_nota_de_una_materia_no_aprobada_da_422_con_mensaje(cliente):
     assert respuesta.json() == {"detail": "Notas inválidas: Programación I tiene nota pero no está aprobada"}
 
 
+
+# --- Publicación de LinkedIn -------------------------------------------------
+
+
+def test_arma_la_publicacion_con_el_progreso_del_alumno(cliente):
+    respuesta = cliente.post(
+        "/api/publicacion",
+        json={"estados": {"1": "aprobada", "2": "aprobada", "3": "aprobada"}, "notas": {"1": 9, "2": 8}},
+    )
+    assert respuesta.status_code == 200
+    datos = respuesta.json()
+    assert datos["texto"].startswith("Ya aprobé 3 de las 17 materias")
+    assert "Promedio" not in datos["texto"]
+    assert datos["titular"] == "Sumando materias"
+    assert (datos["version"], datos["versiones"]) == (0, 2)
+    assert datos["puede_incluir_promedio"] is True
+    assert datos["progreso"]["porcentaje"] == 17
+
+
+def test_la_publicacion_incluye_el_promedio_si_se_pide(cliente):
+    respuesta = cliente.post(
+        "/api/publicacion",
+        json={"estados": {"1": "aprobada"}, "notas": {"1": 9}, "incluir_promedio": True},
+    )
+    assert "Promedio actual: 9 ⭐" in respuesta.json()["texto"]
+
+
+def test_otra_version_da_otro_texto(cliente):
+    cuerpo = {"estados": {"1": "aprobada"}}
+    primera = cliente.post("/api/publicacion", json=cuerpo).json()
+    segunda = cliente.post("/api/publicacion", json={**cuerpo, "version": 1}).json()
+    tercera = cliente.post("/api/publicacion", json={**cuerpo, "version": 2}).json()
+    assert primera["texto"] != segunda["texto"]
+    assert tercera["texto"] == primera["texto"]
+    assert tercera["version"] == 0
+
+
+def test_la_publicacion_valida_igual_que_la_evaluacion(cliente):
+    assert cliente.post("/api/publicacion", json={"estados": {"99": "aprobada"}}).status_code == 422
+    assert cliente.post("/api/publicacion", json={"estados": {"1": "regular"}, "notas": {"1": 8}}).status_code == 422
+    assert cliente.post("/api/publicacion", json={"version": -1}).status_code == 422
+
+
 # --- Plan --------------------------------------------------------------------
 
 
