@@ -4,15 +4,20 @@ Proyecto de portfolio de Agustín, estudiante de la Tecnicatura Universitaria en
 
 ## Cómo trabajar en este proyecto
 
-Trabajá de forma **autónoma**, como un desarrollador senior en un equipo profesional. Agustín revisa el trabajo en los Pull Requests, no durante el desarrollo, así que no le preguntes antes de cada paso: tomá las decisiones razonables, implementalas y documentalas en el PR.
+Trabajá de forma **autónoma**, como un desarrollador senior en un equipo profesional. No le preguntes a Agustín antes de cada paso ni esperes que apruebe los PRs: tomá las decisiones razonables, implementalas, documentalas en el PR, integralo vos y seguí con la próxima tarea. Agustín revisa los PRs después de integrados; si algo no le gusta, lo corrige con un PR nuevo.
 
 Flujo para cada tarea:
 
-1. Crear una rama desde `main` actualizado (`git pull` primero), con un nombre descriptivo.
+1. Partir de `main` actualizado (`git checkout main` y `git pull`) y crear una rama con un nombre descriptivo.
 2. Implementar en commits chicos y coherentes, con mensajes claros en español.
 3. Correr `python -m pytest` antes de cada commit. Si algo falla, arreglarlo antes de seguir. No afirmar que algo funciona sin haberlo ejecutado.
-4. Subir la rama y abrir un PR contra `main`. No encadenar PRs ni commitear directo en `main`.
-5. Actualizar la sección "Estado y próximos pasos" de este archivo en el mismo PR.
+4. Actualizar la sección "Estado y próximos pasos" de este archivo.
+5. Subir la rama y abrir un PR contra `main`. No encadenar PRs ni commitear directo en `main`.
+6. Si el repo tiene GitHub Actions, esperar a que el PR quede en verde. Si falla, arreglarlo en la misma rama.
+7. **Integrar el PR vos mismo** con *squash merge* y borrar la rama: `gh pr merge <número> --squash --delete-branch` (si `gh pr merge` no está disponible, usar la API REST: `gh api -X PUT repos/TTubi/planificador-correlativas/pulls/<número>/merge -f merge_method=squash`).
+8. Volver al paso 1 con la siguiente tarea de "Estado y próximos pasos", sin esperar indicaciones, hasta terminar la lista o encontrar uno de los casos de abajo en los que hay que frenar.
+
+Al terminar una tanda de trabajo, dejale a Agustín un resumen corto con la lista de PRs integrados.
 
 La descripción de cada PR es donde Agustín aprende, así que tiene que incluir:
 
@@ -99,7 +104,8 @@ Hecho:
 
 Siguiente:
 
-7. Diseño, README y GitHub Actions.
-8. Deploy y lanzamiento.
+7. GitHub Actions: correr `pytest` automáticamente en cada PR y en cada push a `main`. Es lo próximo porque, como los PRs se integran sin revisión previa, los tests automáticos son el control de calidad antes de cada merge.
+8. Diseño y README.
+9. Deploy y lanzamiento.
 
 Queda fuera del MVP: login, cálculo de cuatrimestres restantes, equivalencias, Trabajo Final Integrador (se agrega como caso especial más adelante), tabla `carreras` (se agrega cuando haya una segunda carrera) e IA.
