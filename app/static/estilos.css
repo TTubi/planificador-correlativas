@@ -65,6 +65,12 @@
     box-sizing: border-box;
 }
 
+/* El atributo hidden esconde un elemento, pero cualquier regla con display
+   (por ejemplo display: block) le gana. Esto hace que hidden gane siempre. */
+[hidden] {
+    display: none !important;
+}
+
 body {
     margin: 0 auto;
     max-width: 1040px;
@@ -100,22 +106,118 @@ header .ayuda {
     color: var(--texto-suave);
 }
 
-#compartir {
+.acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
     margin-top: 12px;
+}
+
+.acciones button,
+dialog button {
     padding: 8px 14px;
     font: inherit;
     font-weight: 600;
-    /* --superficie y no blanco fijo: en modo oscuro el acento es claro y el
-       texto blanco no llegaría al contraste mínimo (2,5:1 contra 6,4:1). */
-    color: var(--superficie);
-    background: var(--acento);
-    border: none;
     border-radius: 6px;
     cursor: pointer;
 }
 
-#compartir:hover {
+.acciones button:hover,
+dialog button:hover {
     filter: brightness(1.1);
+}
+
+/* "Compartir progreso" es secundario: borde y texto con el acento. */
+#compartir,
+dialog button.secundario {
+    color: var(--acento);
+    background: transparent;
+    border: 2px solid var(--acento);
+}
+
+/* "Publicar progreso" usa el azul de LinkedIn para que se reconozca.
+   Blanco sobre #0a66c2 da 5,9:1, así que sirve en los dos modos. */
+#publicar,
+#publicar-linkedin {
+    color: #ffffff;
+    background: #0a66c2;
+    border: 2px solid #0a66c2;
+}
+
+/* --- Diálogo de publicación ------------------------------------------------ */
+
+dialog {
+    width: min(560px, calc(100% - 32px));
+    max-height: calc(100% - 32px);
+    padding: 20px;
+    color: var(--texto);
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+}
+
+dialog::backdrop {
+    background: rgb(0 0 0 / 55%);
+}
+
+dialog h2 {
+    margin: 0 0 12px;
+    font-size: 1.25rem;
+}
+
+#vista-imagen {
+    display: block;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto 12px;
+    border-radius: 8px;
+}
+
+#texto-publicacion {
+    display: block;
+    width: 100%;
+    margin-top: 4px;
+    padding: 8px;
+    font: inherit;
+    font-size: 0.875rem;
+    color: var(--texto);
+    background: var(--fondo);
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    resize: vertical;
+}
+
+dialog label {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.opcion {
+    display: block;
+    margin-top: 10px;
+}
+
+.consejo,
+.estado {
+    margin: 10px 0 0;
+    font-size: 0.85rem;
+    color: var(--texto-suave);
+}
+
+.estado:empty {
+    display: none;
+}
+
+.estado {
+    color: var(--texto);
+    font-weight: 600;
+}
+
+dialog .botones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
 }
 
 /* Aviso del modo compartido (solo lectura). */

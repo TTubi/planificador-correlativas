@@ -52,16 +52,17 @@ Frená y preguntá **solo** en estos casos:
 ```
 app/
 ├── main.py                 # app FastAPI: registra los routers y monta el frontend
-├── routes/                 # endpoints: health, plan (GET /api/plan), llaves (GET /api/llaves), evaluacion (POST /api/evaluacion)
+├── routes/                 # endpoints: health, plan (GET /api/plan), llaves (GET /api/llaves), evaluacion (POST /api/evaluacion), publicacion (POST /api/publicacion)
 │   └── dependencias.py     # obtener_plan(), reemplazable en los tests
 ├── schemas/                # modelos Pydantic de la API
-├── static/                 # frontend: index.html, estilos.css, app.js (módulo) y compartir.js (lógica pura del link)
+├── static/                 # frontend: index.html, estilos.css, app.js (módulo), compartir.js (lógica pura del link) e imagen.js (dibuja la imagen para LinkedIn)
 ├── services/
 │   ├── plan.py             # Materia y validación del plan (ciclos, referencias)
 │   ├── correlativas.py     # lógica pura: evaluar_plan()
 │   ├── llaves.py           # lógica pura: calcular_llaves()
 │   ├── progreso.py         # lógica pura: calcular_progreso() (porcentaje y promedio)
-│   └── feedback.py         # lógica pura: mensaje_de_avance() (mensajes motivadores)
+│   ├── feedback.py         # lógica pura: mensaje_de_avance() (mensajes motivadores)
+│   └── publicacion.py      # lógica pura: texto_publicacion() (posteo de LinkedIn)
 └── database/
     ├── schema.sql          # tablas materias y correlativas
     └── db.py               # único módulo con SQL
@@ -115,9 +116,10 @@ Hecho:
 11. Progreso: `calcular_progreso()` devuelve el porcentaje de la carrera y el promedio. Nota opcional por materia aprobada, guardada en `localStorage`. `POST /api/evaluacion` acepta `notas` y devuelve `progreso`.
 12. Feedback: `mensaje_de_avance()` arma un mensaje cercano y motivador (voseo, nunca reta) según cuánto falta y el promedio. `POST /api/evaluacion` lo devuelve en `mensaje` y el frontend lo muestra arriba del resumen.
 13. Compartir el progreso: botón que arma un link con el avance (`compartir.js`, con tests en `tests/js/` que corren en GitHub Actions). En el celular usa el menú nativo de compartir; en la compu copia el link. El link se abre en modo solo lectura.
+14. Publicar progreso en LinkedIn: `texto_publicacion()` arma el posteo en primera persona según la etapa (dos versiones por etapa), con el promedio solo si es 7 o más y el alumno lo elige, y crédito a la app y a Agustín (https://www.linkedin.com/in/agustin-ezequiel-singh-576059267). `imagen.js` dibuja la tarjeta 1080×1080 con `<canvas>`. Como LinkedIn no permite prellenar posteos ni crear menciones desde un link, el texto se copia al portapapeles: en el celular se comparte la imagen con el menú nativo y en la compu se descarga y se abre LinkedIn.
 
 Siguiente:
 
-14. Lanzamiento: post en LinkedIn (a cargo de Agustín).
+15. Lanzamiento: post en LinkedIn (a cargo de Agustín).
 
 Queda fuera del MVP: promedio con aplazos (posible mejora futura), login, cálculo de cuatrimestres restantes, equivalencias, Trabajo Final Integrador (se agrega como caso especial más adelante), tabla `carreras` (se agrega cuando haya una segunda carrera) e IA.

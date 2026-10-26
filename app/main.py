@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from app.database.db import RUTA_BASE
-from app.routes import evaluacion, health, llaves, plan
+from app.routes import evaluacion, health, llaves, plan, publicacion
 from scripts.cargar_plan import RUTA_PLAN, cargar
 
 CARPETA_FRONTEND = Path(__file__).with_name("static")
@@ -37,6 +37,7 @@ app.include_router(health.router)
 app.include_router(plan.router)
 app.include_router(llaves.router)
 app.include_router(evaluacion.router)
+app.include_router(publicacion.router)
 
 # El frontend se monta al final: "/" atrapa cualquier ruta, así que tiene que
 # ir después de la API. `html=True` hace que "/" devuelva index.html.
