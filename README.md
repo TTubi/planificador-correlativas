@@ -16,6 +16,7 @@ App web para estudiantes de la **Tecnicatura Universitaria en Programación (UTN
   - 🟩 Podés cursarla.
   - 🟦 Podés rendirla.
   - 🟧 Bloqueada, con la lista exacta de lo que falta. Por ejemplo: "Para cursar falta: Programación II (regular)".
+- **Tu avance en la carrera:** el porcentaje completado (por cantidad de materias aprobadas) y tu promedio. La nota de cada materia aprobada es opcional, y el promedio es sin aplazos: solo cuenta las notas con las que aprobaste.
 - **Materias llave:** cuántas materias desbloquea cada una, directamente y en cadena. Por ejemplo, Programación I y Matemática desbloquean 10 de las 17.
 - **Sin cuentas ni login:** tu progreso se guarda en tu navegador (`localStorage`). El servidor no guarda datos personales.
 
@@ -116,7 +117,7 @@ La documentación interactiva está en <http://127.0.0.1:8000/docs>.
 |---|---|---|
 | `GET` | `/api/plan` | Materias del plan con su año y sus correlativas. |
 | `GET` | `/api/llaves` | Qué materias desbloquea cada una, de la más llave a la menos. |
-| `POST` | `/api/evaluacion` | Recibe el estado del alumno y devuelve qué puede cursar y rendir, y qué le falta. |
+| `POST` | `/api/evaluacion` | Recibe el estado del alumno (y opcionalmente sus notas) y devuelve qué puede cursar y rendir, qué le falta, el porcentaje de la carrera y el promedio. |
 | `GET` | `/health` | Verifica que el servidor esté funcionando. |
 
 Ejemplo:
@@ -125,10 +126,19 @@ Ejemplo:
 POST /api/evaluacion
 Content-Type: application/json
 
-{ "estados": { "1": "aprobada", "3": "regular" } }
+{
+  "estados": { "1": "aprobada", "2": "aprobada", "3": "regular" },
+  "notas": { "1": 8, "2": 7 }
+}
 ```
 
-Las materias que no aparecen se consideran pendientes. Una materia inexistente o un estado inválido devuelven `422`.
+Las materias que no aparecen se consideran pendientes. `notas` es opcional: solo admite materias aprobadas y notas enteras del 6 al 10. Una materia inexistente, un estado inválido o una nota que no cumple esas reglas devuelven `422`.
+
+La respuesta incluye, además de cada materia, el progreso:
+
+```json
+"progreso": { "aprobadas": 2, "total": 17, "porcentaje": 11, "promedio": 7.5, "notas_cargadas": 2 }
+```
 
 ## Estructura
 
@@ -156,7 +166,7 @@ tests/
 
 ## Fuera del alcance
 
-Por ahora no incluye: login, cálculo de cuatrimestres restantes, equivalencias, Trabajo Final Integrador y otras carreras.
+Por ahora no incluye: promedio con aplazos, login, cálculo de cuatrimestres restantes, equivalencias, Trabajo Final Integrador y otras carreras.
 
 ## Autor
 

@@ -59,7 +59,8 @@ app/
 ├── services/
 │   ├── plan.py             # Materia y validación del plan (ciclos, referencias)
 │   ├── correlativas.py     # lógica pura: evaluar_plan()
-│   └── llaves.py           # lógica pura: calcular_llaves()
+│   ├── llaves.py           # lógica pura: calcular_llaves()
+│   └── progreso.py         # lógica pura: calcular_progreso() (porcentaje y promedio)
 └── database/
     ├── schema.sql          # tablas materias y correlativas
     └── db.py               # único módulo con SQL
@@ -82,6 +83,7 @@ Principios:
 - **Cursar:** la materia está pendiente, sus `regulares` están al menos regularizadas y sus `aprobadas` están aprobadas.
 - **Rendir:** la materia está regularizada y todas sus correlativas (las dos listas) están aprobadas.
 - No se valida que el estado del alumno sea "posible" (puede haber equivalencias).
+- **Progreso:** el porcentaje de la carrera se calcula por cantidad de materias aprobadas, redondeado hacia abajo. El promedio es **sin aplazos**: solo las notas (enteras, de 6 a 10) de materias aprobadas. La nota es opcional.
 
 ## Comandos
 
@@ -107,9 +109,11 @@ Hecho:
 8. README con captura, cómo correrlo, API y decisiones de diseño.
 9. Diseño visual: colores con variables CSS, modo oscuro, resumen con barra de progreso, leyenda y contraste WCAG AA.
 10. Deploy en Vercel: <https://planificador-correlativas.vercel.app/>. La base se genera sola al arrancar, su ruta se configura con `PLANIFICADOR_DB` (en Vercel, `/tmp/planificador.db`), la versión de Python está en `.python-version` y el README explica el deploy. Cada push a `main` publica una versión nueva.
+11. Progreso: `calcular_progreso()` devuelve el porcentaje de la carrera y el promedio. Nota opcional por materia aprobada, guardada en `localStorage`. `POST /api/evaluacion` acepta `notas` y devuelve `progreso`.
 
 Siguiente:
 
-11. Lanzamiento: post en LinkedIn (a cargo de Agustín).
+12. Mensajes de feedback según el porcentaje y el promedio, con tono cercano y motivador (voseo). Calculados en el backend como función pura.
+13. Lanzamiento: post en LinkedIn (a cargo de Agustín).
 
-Queda fuera del MVP: login, cálculo de cuatrimestres restantes, equivalencias, Trabajo Final Integrador (se agrega como caso especial más adelante), tabla `carreras` (se agrega cuando haya una segunda carrera) e IA.
+Queda fuera del MVP: promedio con aplazos (posible mejora futura), login, cálculo de cuatrimestres restantes, equivalencias, Trabajo Final Integrador (se agrega como caso especial más adelante), tabla `carreras` (se agrega cuando haya una segunda carrera) e IA.
