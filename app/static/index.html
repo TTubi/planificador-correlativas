@@ -11,7 +11,14 @@
         <h1>Planificador de Correlativas</h1>
         <p class="carrera">Tecnicatura Universitaria en Programación · Plan 2024</p>
         <p class="ayuda">Marcá qué materias tenés regulares o aprobadas. Tu progreso se guarda en este navegador.</p>
+        <button id="compartir" type="button" hidden>Compartir mi progreso</button>
     </header>
+
+    <!-- Solo se muestra al abrir un link compartido. -->
+    <p id="aviso-compartido" class="aviso" hidden>
+        Estás viendo el progreso que te compartieron. Tu propio progreso no se modifica.
+        <a href="./">Ver mi progreso</a>
+    </p>
 
     <!-- aria-live hace que los lectores de pantalla anuncien los cambios del resumen. -->
     <section id="resumen" aria-live="polite"></section>
@@ -27,7 +34,8 @@
         <p class="mensaje">Cargando el plan…</p>
     </main>
 
-    <!-- `defer` ejecuta el script cuando el HTML ya está armado. -->
-    <script src="app.js" defer></script>
+    <!-- type="module" permite usar import/export entre archivos .js. Los
+         módulos se ejecutan cuando el HTML ya está armado, como con defer. -->
+    <script type="module" src="app.js"></script>
 </body>
 </html>
