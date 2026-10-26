@@ -4,14 +4,29 @@ Este es el único módulo que escribe SQL. El resto de la aplicación trabaja
 con objetos Materia y no necesita saber cómo se guardan.
 """
 
+import os
 import sqlite3
 from pathlib import Path
 
 from app.services.plan import Materia
 
 RAIZ_PROYECTO = Path(__file__).resolve().parents[2]
-RUTA_BASE = RAIZ_PROYECTO / "planificador.db"
+RUTA_BASE_POR_DEFECTO = RAIZ_PROYECTO / "planificador.db"
 RUTA_ESQUEMA = Path(__file__).with_name("schema.sql")
+
+
+def ruta_base_configurada() -> Path:
+    """Devuelve dónde va la base: la variable PLANIFICADOR_DB o la ruta por defecto.
+
+    Sirve para los hostings donde la carpeta del proyecto es de solo
+    lectura, como Vercel, que solo deja escribir en /tmp.
+    """
+    return Path(os.environ.get("PLANIFICADOR_DB") or RUTA_BASE_POR_DEFECTO)
+
+
+# Se lee una sola vez, al importar el módulo: la variable de entorno se
+# define antes de arrancar el servidor y no cambia mientras corre.
+RUTA_BASE = ruta_base_configurada()
 
 
 def conectar(ruta: Path | str = RUTA_BASE) -> sqlite3.Connection:
