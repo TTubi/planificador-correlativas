@@ -93,9 +93,7 @@ Hecho:
 2. Plan en JSON, esquema SQLite, script de carga y validaciones.
 3. Lógica de cursar, rendir y faltantes, con tests.
 4. API: `POST /api/evaluacion` recibe `{"estados": {"1": "aprobada"}}` y devuelve `evaluar_plan()`. Esquemas Pydantic, `/health` en `routes/` y tests con `TestClient`.
-
-5a. `GET /api/plan` y frontend servido por FastAPI que muestra el plan por año con sus correlativas.
-5b. Frontend: marcar estados, guardarlos en `localStorage`, llamar a `/api/evaluacion` y mostrar qué se puede cursar, rendir y qué falta.
+5. Frontend: `GET /api/plan`, plan por año servido por FastAPI, selector de estado por materia guardado en `localStorage` y resultado de `/api/evaluacion` (cursable, rendible, bloqueada y qué falta).
 
 Siguiente:
 
