@@ -48,7 +48,6 @@ cd planificador-correlativas
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-python -m scripts.cargar_plan
 uvicorn app.main:app --reload
 ```
 
@@ -60,13 +59,12 @@ cd planificador-correlativas
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-python -m scripts.cargar_plan
 uvicorn app.main:app --reload
 ```
 
 Después abrí <http://127.0.0.1:8000/>.
 
-`python -m scripts.cargar_plan` genera la base `planificador.db` a partir del JSON del plan. Hay que correrlo la primera vez y cada vez que cambie el JSON.
+Al arrancar, la app valida el JSON del plan y genera la base `planificador.db`. Si el plan tiene errores, no arranca y los muestra. `python -m scripts.cargar_plan` hace lo mismo a mano, y sirve para validar el JSON sin levantar el servidor.
 
 ### Tests
 
