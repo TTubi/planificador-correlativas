@@ -27,9 +27,9 @@ El objetivo es que Agustín **aprenda** mientras se desarrolla, y que pueda expl
 
 ```
 app/
-├── main.py                 # app FastAPI
-├── routes/                 # endpoints (todavía no existe)
-├── schemas/                # modelos Pydantic de la API (todavía no existe)
+├── main.py                 # app FastAPI: registra los routers
+├── routes/                 # endpoints: health.py, evaluacion.py (POST /api/evaluacion)
+├── schemas/                # modelos Pydantic de la API
 ├── services/
 │   ├── plan.py             # Materia y validación del plan (ciclos, referencias)
 │   └── correlativas.py     # lógica pura: evaluar_plan()
@@ -71,11 +71,11 @@ Hecho:
 1. Estructura inicial y `GET /health`.
 2. Plan en JSON, esquema SQLite, script de carga y validaciones.
 3. Lógica de cursar, rendir y faltantes, con tests.
+4. API: `POST /api/evaluacion` recibe `{"estados": {"1": "aprobada"}}` y devuelve `evaluar_plan()`. Esquemas Pydantic, `/health` en `routes/` y tests con `TestClient`.
 
 Siguiente:
 
-4. API: endpoint que recibe el estado del alumno y devuelve `evaluar_plan()`, con esquemas Pydantic y tests con `TestClient`. Mover `/health` a `routes/` y explicar `APIRouter`.
-5. Frontend: vista del plan por año, marcar estados, `localStorage` y resultados.
+5. Frontend: vista del plan por año (la respuesta todavía no incluye `nivel`: agregarlo o sumar `GET /api/plan`), marcar estados, `localStorage` y resultados.
 6. Materias llave: cuántas materias desbloquea cada una, directa e indirectamente.
 7. Diseño, README y GitHub Actions.
 8. Deploy y lanzamiento.
