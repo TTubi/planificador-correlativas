@@ -96,7 +96,7 @@ async function evaluar() {
             body: JSON.stringify({ estados, notas }),
         });
         if (pedido === ultimoPedido) {
-            mostrarEvaluacion(datos.materias, datos.progreso);
+            mostrarEvaluacion(datos.materias, datos.progreso, datos.mensaje);
         }
     } catch (error) {
         if (pedido === ultimoPedido) {
@@ -259,7 +259,7 @@ function situacion(evaluacion) {
         : { clase: "bloqueada", texto: "Para cursar falta: " + listarFaltantes(evaluacion.faltan_para_cursar) };
 }
 
-function mostrarEvaluacion(evaluaciones, progreso) {
+function mostrarEvaluacion(evaluaciones, progreso, mensaje) {
     for (const evaluacion of evaluaciones) {
         const tarjeta = document.querySelector(`.materia[data-numero="${evaluacion.numero}"]`);
         const { clase, texto } = situacion(evaluacion);
@@ -267,7 +267,7 @@ function mostrarEvaluacion(evaluaciones, progreso) {
         tarjeta.querySelector(".resultado").textContent = texto;
     }
 
-    mostrarResumen(evaluaciones, progreso);
+    mostrarResumen(evaluaciones, progreso, mensaje);
 }
 
 // Un número grande con su descripción, por ejemplo "4 / materias para cursar".
@@ -287,7 +287,7 @@ function formatearPromedio(promedio) {
     return promedio.toLocaleString("es-AR", { maximumFractionDigits: 2 });
 }
 
-function mostrarResumen(evaluaciones, progreso) {
+function mostrarResumen(evaluaciones, progreso, mensaje) {
     const cuantas = (condicion) => evaluaciones.filter(condicion).length;
     const { aprobadas, total, porcentaje, promedio } = progreso;
 
@@ -304,7 +304,13 @@ function mostrarResumen(evaluaciones, progreso) {
     relleno.style.width = `${(aprobadas / total) * 100}%`;
     barra.append(relleno);
 
+    // El texto lo arma el backend (services/feedback.py), con sus tests.
+    const feedback = document.createElement("p");
+    feedback.className = "feedback";
+    feedback.textContent = mensaje;
+
     document.getElementById("resumen").replaceChildren(
+        feedback,
         crearDato("cursable", cuantas((e) => e.puede_cursar), "para cursar"),
         crearDato("rendible", cuantas((e) => e.puede_rendir), "para rendir"),
         crearDato("aprobada", `${porcentaje}%`, `de la carrera · ${aprobadas}/${total} aprobadas`),
