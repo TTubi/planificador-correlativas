@@ -1,0 +1,24 @@
+{
+  "carrera": "Tecnicatura Universitaria en Programación",
+  "plan": "2024",
+  "norma": "Ordenanza N.º 2019/2023 del Consejo Superior de la UTN",
+  "materias": [
+    {"numero": 1, "nombre": "Programación I", "nivel": 1, "regulares": [], "aprobadas": []},
+    {"numero": 2, "nombre": "Arquitectura y Sistemas Operativos", "nivel": 1, "regulares": [], "aprobadas": []},
+    {"numero": 3, "nombre": "Matemática", "nivel": 1, "regulares": [], "aprobadas": []},
+    {"numero": 4, "nombre": "Organización Empresarial", "nivel": 1, "regulares": [], "aprobadas": []},
+    {"numero": 5, "nombre": "Programación II", "nivel": 1, "regulares": [1, 2], "aprobadas": []},
+    {"numero": 6, "nombre": "Probabilidad y Estadística", "nivel": 1, "regulares": [3], "aprobadas": []},
+    {"numero": 7, "nombre": "Base de Datos I", "nivel": 1, "regulares": [1, 3], "aprobadas": []},
+    {"numero": 8, "nombre": "Inglés I", "nivel": 1, "regulares": [], "aprobadas": []},
+    {"numero": 9, "nombre": "Programación III", "nivel": 2, "regulares": [5, 7], "aprobadas": [1]},
+    {"numero": 10, "nombre": "Base de Datos II", "nivel": 2, "regulares": [7], "aprobadas": [1]},
+    {"numero": 11, "nombre": "Metodología de Sistemas I", "nivel": 2, "regulares": [5, 7], "aprobadas": [1, 4]},
+    {"numero": 12, "nombre": "Inglés II", "nivel": 2, "regulares": [8], "aprobadas": []},
+    {"numero": 13, "nombre": "Programación IV", "nivel": 2, "regulares": [9, 10, 11], "aprobadas": [5, 7]},
+    {"numero": 14, "nombre": "Metodología de Sistemas II", "nivel": 2, "regulares": [11], "aprobadas": [4]},
+    {"numero": 15, "nombre": "Introducción al Análisis de Datos", "nivel": 2, "regulares": [10], "aprobadas": [6, 7]},
+    {"numero": 16, "nombre": "Legislación", "nivel": 2, "regulares": [7], "aprobadas": [4]},
+    {"numero": 17, "nombre": "Gestión de Desarrollo de Software", "nivel": 2, "regulares": [9, 10], "aprobadas": [5, 7]}
+  ]
+}
