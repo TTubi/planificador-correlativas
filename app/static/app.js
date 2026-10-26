@@ -12,10 +12,15 @@ const OPCIONES_ESTADO = [
     ["aprobada", "Aprobada"],
 ];
 const CLAVE_GUARDADO = "planificador-correlativas:estados";
+const CLAVE_NOTAS = "planificador-correlativas:notas";
+// En la UTN se aprueba con 6 o más. El backend valida lo mismo.
+const NOTAS_POSIBLES = [6, 7, 8, 9, 10];
 
 // Estado del alumno: número de materia → "regular" o "aprobada".
 // Las pendientes no se guardan, igual que espera la API.
 let estados = {};
+// Número de materia aprobada → nota. Es opcional: puede no estar.
+let notas = {};
 let nombrePorNumero = {};
 // Número de materia → qué materias desbloquea (de GET /api/llaves).
 let llavePorNumero = {};
@@ -44,9 +49,28 @@ function leerEstadosGuardados(numerosValidos) {
     return limpios;
 }
 
-function guardarEstados() {
+// Igual que con los estados, se descarta lo que no tiene sentido: una nota
+// de una materia que no está aprobada o fuera de la escala haría que la API
+// responda 422.
+function leerNotasGuardadas() {
+    let guardado;
     try {
-        localStorage.setItem(CLAVE_GUARDADO, JSON.stringify(estados));
+        guardado = JSON.parse(localStorage.getItem(CLAVE_NOTAS)) ?? {};
+    } catch {
+        return {};
+    }
+    const limpias = {};
+    for (const [numero, nota] of Object.entries(guardado)) {
+        if (estados[numero] === "aprobada" && NOTAS_POSIBLES.includes(nota)) {
+            limpias[numero] = nota;
+        }
+    }
+    return limpias;
+}
+
+function guardar(clave, valor) {
+    try {
+        localStorage.setItem(clave, JSON.stringify(valor));
     } catch {
         // Puede fallar en modo privado o si el navegador bloquea el guardado.
         // La página sigue funcionando; solo no recuerda el progreso.
@@ -69,10 +93,10 @@ async function evaluar() {
         const datos = await pedirJson("/api/evaluacion", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ estados }),
+            body: JSON.stringify({ estados, notas }),
         });
         if (pedido === ultimoPedido) {
-            mostrarEvaluacion(datos.materias);
+            mostrarEvaluacion(datos.materias, datos.progreso);
         }
     } catch (error) {
         if (pedido === ultimoPedido) {
@@ -107,7 +131,7 @@ function textoLlave(numero) {
     return `Desbloquea ${llave.desbloquea_directamente.length} directamente · ${total} en total`;
 }
 
-function crearSelectorEstado(materia) {
+function crearSelectorEstado(materia, selectorNota) {
     const selector = document.createElement("select");
     selector.setAttribute("aria-label", `Estado de ${materia.nombre}`);
     for (const [valor, texto] of OPCIONES_ESTADO) {
@@ -121,7 +145,37 @@ function crearSelectorEstado(materia) {
         } else {
             estados[materia.numero] = selector.value;
         }
-        guardarEstados();
+        // La nota solo tiene sentido si la materia está aprobada.
+        if (selector.value !== "aprobada") {
+            delete notas[materia.numero];
+            selectorNota.value = "";
+        }
+        selectorNota.hidden = selector.value !== "aprobada";
+        guardar(CLAVE_GUARDADO, estados);
+        guardar(CLAVE_NOTAS, notas);
+        evaluar();
+    });
+    return selector;
+}
+
+function crearSelectorNota(materia) {
+    const selector = document.createElement("select");
+    selector.className = "nota";
+    selector.setAttribute("aria-label", `Nota de ${materia.nombre}`);
+    selector.append(new Option("Sin nota", ""));
+    for (const nota of NOTAS_POSIBLES) {
+        selector.append(new Option(`Nota ${nota}`, nota));
+    }
+    selector.value = notas[materia.numero] ?? "";
+    selector.hidden = estados[materia.numero] !== "aprobada";
+
+    selector.addEventListener("change", () => {
+        if (selector.value === "") {
+            delete notas[materia.numero];
+        } else {
+            notas[materia.numero] = Number(selector.value);
+        }
+        guardar(CLAVE_NOTAS, notas);
         evaluar();
     });
     return selector;
@@ -152,7 +206,12 @@ function crearTarjeta(materia) {
     const resultado = document.createElement("p");
     resultado.className = "resultado";
 
-    tarjeta.append(titulo, crearSelectorEstado(materia), requisitos, llave, resultado);
+    const controles = document.createElement("div");
+    controles.className = "controles";
+    const selectorNota = crearSelectorNota(materia);
+    controles.append(crearSelectorEstado(materia, selectorNota), selectorNota);
+
+    tarjeta.append(titulo, controles, requisitos, llave, resultado);
     return tarjeta;
 }
 
@@ -200,7 +259,7 @@ function situacion(evaluacion) {
         : { clase: "bloqueada", texto: "Para cursar falta: " + listarFaltantes(evaluacion.faltan_para_cursar) };
 }
 
-function mostrarEvaluacion(evaluaciones) {
+function mostrarEvaluacion(evaluaciones, progreso) {
     for (const evaluacion of evaluaciones) {
         const tarjeta = document.querySelector(`.materia[data-numero="${evaluacion.numero}"]`);
         const { clase, texto } = situacion(evaluacion);
@@ -208,7 +267,7 @@ function mostrarEvaluacion(evaluaciones) {
         tarjeta.querySelector(".resultado").textContent = texto;
     }
 
-    mostrarResumen(evaluaciones);
+    mostrarResumen(evaluaciones, progreso);
 }
 
 // Un número grande con su descripción, por ejemplo "4 / materias para cursar".
@@ -223,10 +282,14 @@ function crearDato(clase, valor, descripcion) {
     return dato;
 }
 
-function mostrarResumen(evaluaciones) {
+// 7.5 → "7,5" y 8 → "8": formato argentino, sin ceros de más.
+function formatearPromedio(promedio) {
+    return promedio.toLocaleString("es-AR", { maximumFractionDigits: 2 });
+}
+
+function mostrarResumen(evaluaciones, progreso) {
     const cuantas = (condicion) => evaluaciones.filter(condicion).length;
-    const aprobadas = cuantas((e) => e.estado === "aprobada");
-    const total = evaluaciones.length;
+    const { aprobadas, total, porcentaje, promedio } = progreso;
 
     // Barra de progreso de la carrera. Los atributos role y aria-* le dicen
     // a los lectores de pantalla qué representa y cuánto vale.
@@ -244,7 +307,10 @@ function mostrarResumen(evaluaciones) {
     document.getElementById("resumen").replaceChildren(
         crearDato("cursable", cuantas((e) => e.puede_cursar), "para cursar"),
         crearDato("rendible", cuantas((e) => e.puede_rendir), "para rendir"),
-        crearDato("aprobada", `${aprobadas}/${total}`, "aprobadas"),
+        crearDato("aprobada", `${porcentaje}%`, `de la carrera · ${aprobadas}/${total} aprobadas`),
+        promedio === null
+            ? crearDato("promedio", "—", "promedio: cargá tus notas")
+            : crearDato("promedio", formatearPromedio(promedio), "promedio"),
         barra,
     );
 }
@@ -270,6 +336,7 @@ async function iniciar() {
             llavePorNumero[llave.numero] = llave;
         }
         estados = leerEstadosGuardados(new Set(materias.map((m) => m.numero)));
+        notas = leerNotasGuardadas();
         mostrarPlan(materias);
         await evaluar();
     } catch (error) {

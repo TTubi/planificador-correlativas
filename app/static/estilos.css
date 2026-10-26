@@ -104,7 +104,7 @@ header .ayuda {
 
 #resumen {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 12px;
     margin: 24px 0 12px;
 }
@@ -137,6 +137,7 @@ header .ayuda {
 .dato.cursable { --color-dato: var(--cursable); }
 .dato.rendible { --color-dato: var(--rendible); }
 .dato.aprobada { --color-dato: var(--acento); }
+.dato.promedio { --color-dato: var(--texto); }
 
 .progreso {
     grid-column: 1 / -1;
@@ -236,8 +237,13 @@ header .ayuda {
     font-weight: 500;
 }
 
+.controles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
 .materia select {
-    align-self: flex-start;
     padding: 4px 8px;
     font: inherit;
     font-size: 0.875rem;
@@ -289,6 +295,12 @@ header .ayuda {
 }
 
 /* --- Celular --------------------------------------------------------------- */
+
+@media (max-width: 720px) {
+    #resumen {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
 
 @media (max-width: 480px) {
     .dato {
