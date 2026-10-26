@@ -18,7 +18,8 @@ App web para estudiantes de la **Tecnicatura Universitaria en Programación (UTN
   - 🟧 Bloqueada, con la lista exacta de lo que falta. Por ejemplo: "Para cursar falta: Programación II (regular)".
 - **Tu avance en la carrera:** el porcentaje completado (por cantidad de materias aprobadas) y tu promedio. La nota de cada materia aprobada es opcional, y el promedio es sin aplazos: solo cuenta las notas con las que aprobaste.
 - **Feedback motivador:** un mensaje según cuánto te falta y tu promedio. Por ejemplo: "¡Te faltan solo 2 materias! Metele un último esfuerzo 💪 Y con un promedio de 8,67, ¡excelente!"
-- **Compartí tu progreso:** un botón genera un link con tu avance (en el celular abre el menú para mandarlo por WhatsApp). Quien lo abre lo ve en modo solo lectura, sin que se modifique su propio progreso.
+- **Compartir progreso:** un botón genera un link con tu avance (en el celular abre el menú para mandarlo por WhatsApp). Quien lo abre lo ve en modo solo lectura, sin que se modifique su propio progreso.
+- **Publicar progreso:** arma una imagen con tu avance y el texto de una publicación para LinkedIn, en primera persona y distinto según la etapa de la carrera. Podés ver otra versión, sumar tu promedio (si es 7 o más) y editar el texto antes de publicar.
 - **Materias llave:** cuántas materias desbloquea cada una, directamente y en cadena. Por ejemplo, Programación I y Matemática desbloquean 10 de las 17.
 - **Sin cuentas ni login:** tu progreso se guarda en tu navegador (`localStorage`). El servidor no guarda datos personales.
 
@@ -121,6 +122,7 @@ La documentación interactiva está en <http://127.0.0.1:8000/docs>.
 | `GET` | `/api/plan` | Materias del plan con su año y sus correlativas. |
 | `GET` | `/api/llaves` | Qué materias desbloquea cada una, de la más llave a la menos. |
 | `POST` | `/api/evaluacion` | Recibe el estado del alumno (y opcionalmente sus notas) y devuelve qué puede cursar y rendir, qué le falta, el porcentaje de la carrera y el promedio. |
+| `POST` | `/api/publicacion` | Con el mismo estado (y opcionalmente `incluir_promedio` y `version`), devuelve el texto para publicar en LinkedIn y el titular de la imagen. |
 | `GET` | `/health` | Verifica que el servidor esté funcionando. |
 
 Ejemplo:
@@ -151,9 +153,9 @@ app/
 ├── main.py              # crea la app, registra los routers y sirve el frontend
 ├── routes/              # endpoints HTTP
 ├── schemas/             # modelos Pydantic: el contrato de la API
-├── services/            # lógica pura: correlativas, materias llave, progreso, feedback y validación del plan
+├── services/            # lógica pura: correlativas, materias llave, progreso, feedback, publicación y validación del plan
 ├── database/            # esquema SQLite y el único módulo con SQL
-└── static/              # frontend: index.html, estilos.css, app.js y compartir.js
+└── static/              # frontend: index.html, estilos.css, app.js, compartir.js e imagen.js
 data/tup_plan2024.json   # fuente de verdad del plan de estudios
 scripts/cargar_plan.py   # valida el plan y genera la base
 tests/                   # tests de Python, y tests/js/ con los de JavaScript
