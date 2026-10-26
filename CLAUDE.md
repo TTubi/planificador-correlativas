@@ -72,7 +72,7 @@ tests/
 Principios:
 
 - `services/` contiene funciones puras: no leen la base, archivos ni HTTP.
-- La base `planificador.db` es un archivo generado y está en `.gitignore`. La fuente de verdad es el JSON.
+- La base `planificador.db` es un archivo generado y está en `.gitignore`. La fuente de verdad es el JSON. La app la regenera al arrancar (`lifespan` en `main.py`); `scripts/cargar_plan.py` hace lo mismo a mano.
 - El progreso del alumno se guarda en su navegador (`localStorage`). El backend no guarda datos personales ni tiene login.
 
 ## Reglas del dominio
@@ -108,6 +108,6 @@ Hecho:
 
 Siguiente:
 
-10. Deploy y lanzamiento.
+10. Deploy y lanzamiento. Ya resuelto: la base se genera sola al arrancar, así que el servidor no necesita un paso previo. Falta elegir el hosting (requiere que Agustín cree la cuenta) y sumar el link de la demo al README.
 
 Queda fuera del MVP: login, cálculo de cuatrimestres restantes, equivalencias, Trabajo Final Integrador (se agrega como caso especial más adelante), tabla `carreras` (se agrega cuando haya una segunda carrera) e IA.
