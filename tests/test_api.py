@@ -104,6 +104,23 @@ def test_devuelve_el_plan_con_nivel_y_correlativas(cliente):
     }
 
 
+# --- Materias llave ----------------------------------------------------------
+
+
+def test_devuelve_las_materias_llave_ordenadas(cliente):
+    respuesta = cliente.get("/api/llaves")
+    assert respuesta.status_code == 200
+    materias = respuesta.json()["materias"]
+    assert len(materias) == 17
+    assert materias[0] == {
+        "numero": 1,
+        "nombre": "Programación I",
+        "desbloquea_directamente": [5, 7, 9, 10, 11],
+        "desbloquea_en_total": [5, 7, 9, 10, 11, 13, 14, 15, 16, 17],
+    }
+    totales = [len(m["desbloquea_en_total"]) for m in materias]
+    assert totales == sorted(totales, reverse=True)
+
 # --- Frontend ----------------------------------------------------------------
 
 
