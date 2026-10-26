@@ -66,13 +66,14 @@ app/
 data/tup_plan2024.json      # fuente de verdad del plan (Ordenanza 2019/2023 CS UTN)
 scripts/cargar_plan.py      # genera planificador.db desde el JSON
 .github/workflows/tests.yml # corre pytest en GitHub Actions
+.python-version             # versión de Python: la leen Vercel y GitHub Actions
 tests/
 ```
 
 Principios:
 
 - `services/` contiene funciones puras: no leen la base, archivos ni HTTP.
-- La base `planificador.db` es un archivo generado y está en `.gitignore`. La fuente de verdad es el JSON. La app la regenera al arrancar (`lifespan` en `main.py`); `scripts/cargar_plan.py` hace lo mismo a mano.
+- La base `planificador.db` es un archivo generado y está en `.gitignore`. La fuente de verdad es el JSON. La app la regenera al arrancar (`lifespan` en `main.py`); `scripts/cargar_plan.py` hace lo mismo a mano. Su ruta se puede cambiar con la variable de entorno `PLANIFICADOR_DB` (en Vercel: `/tmp/planificador.db`).
 - El progreso del alumno se guarda en su navegador (`localStorage`). El backend no guarda datos personales ni tiene login.
 
 ## Reglas del dominio
@@ -105,9 +106,10 @@ Hecho:
 7. GitHub Actions (`.github/workflows/tests.yml`): `pytest` corre en cada PR y en cada push a `main`, en Windows y en Linux.
 8. README con captura, cómo correrlo, API y decisiones de diseño.
 9. Diseño visual: colores con variables CSS, modo oscuro, resumen con barra de progreso, leyenda y contraste WCAG AA.
+10. Deploy en Vercel: <https://planificador-correlativas.vercel.app/>. La base se genera sola al arrancar, su ruta se configura con `PLANIFICADOR_DB` (en Vercel, `/tmp/planificador.db`), la versión de Python está en `.python-version` y el README explica el deploy. Cada push a `main` publica una versión nueva.
 
 Siguiente:
 
-10. Deploy y lanzamiento. Ya resuelto: la base se genera sola al arrancar, así que el servidor no necesita un paso previo. Falta elegir el hosting (requiere que Agustín cree la cuenta) y sumar el link de la demo al README.
+11. Lanzamiento: post en LinkedIn (a cargo de Agustín).
 
 Queda fuera del MVP: login, cálculo de cuatrimestres restantes, equivalencias, Trabajo Final Integrador (se agrega como caso especial más adelante), tabla `carreras` (se agrega cuando haya una segunda carrera) e IA.

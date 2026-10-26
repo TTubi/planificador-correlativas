@@ -4,6 +4,8 @@
 
 App web para estudiantes de la **Tecnicatura Universitaria en Programación (UTN, plan 2024)**. Marcás qué materias tenés regulares o aprobadas y te muestra qué podés cursar, qué podés rendir, qué está bloqueado y qué te falta para desbloquearlo.
 
+**Demo online:** <https://planificador-correlativas.vercel.app/>
+
 ![Captura del planificador](docs/captura.png)
 
 ## Qué hace
@@ -38,7 +40,7 @@ El plan completo está en [`data/tup_plan2024.json`](data/tup_plan2024.json).
 
 ## Cómo correrlo
 
-Necesitás Python 3.13 (o 3.10 o más nuevo).
+Necesitás Python 3.13, la versión fijada en [`.python-version`](.python-version). También funciona desde 3.10.
 
 **Windows (PowerShell):**
 
@@ -73,6 +75,38 @@ python -m pytest
 ```
 
 Los tests no necesitan la base generada: los de la API arman una base temporal propia.
+
+### Configuración
+
+| Variable de entorno | Para qué sirve | Valor por defecto |
+|---|---|---|
+| `PLANIFICADOR_DB` | Ruta del archivo de la base SQLite que se genera al arrancar. | `planificador.db` en la raíz del proyecto |
+
+Localmente no hace falta definirla. Existe para los hostings donde la carpeta del proyecto es de solo lectura.
+
+## Deploy en Vercel
+
+Vercel detecta la app FastAPI en `app/main.py` y la publica como una función serverless, así que no hace falta un `vercel.json`. Los archivos de `app/static/` se sirven desde su CDN.
+
+1. En [vercel.com](https://vercel.com), entrá con tu cuenta de GitHub y elegí **Add New → Project**.
+2. Importá el repo `planificador-correlativas`. Vercel reconoce el preset **FastAPI**: no cambies los comandos de build ni la carpeta raíz.
+3. En **Environment Variables**, agregá:
+
+   | Nombre | Valor |
+   |---|---|
+   | `PLANIFICADOR_DB` | `/tmp/planificador.db` |
+
+4. Tocá **Deploy**. En uno o dos minutos te da la URL pública. La demo de este repo está en <https://planificador-correlativas.vercel.app/>.
+
+Desde ahí, cada push a `main` publica una versión nueva, y cada PR recibe su propia URL de vista previa.
+
+Por qué hace falta `PLANIFICADOR_DB`: en Vercel el código queda en una carpeta de **solo lectura**, y el único lugar donde se puede escribir es `/tmp`. Sin la variable, la app intenta crear la base junto al código, falla al arrancar y el deploy queda caído.
+
+Detalles a tener en cuenta:
+
+- **Versión de Python:** Vercel la toma de `.python-version` (3.13). GitHub Actions usa el mismo archivo, así que el deploy y los tests corren con la misma versión.
+- **La base vive en `/tmp`, que es temporal:** cada instancia de la función la regenera al arrancar (el `lifespan` de `main.py`). No es un problema, porque la base solo contiene el plan, que sale del JSON. El progreso de cada alumno nunca pasa por el servidor.
+- **Arranque en frío:** si la app no recibió visitas por un rato, el primer pedido tarda un poco más, porque Vercel crea una instancia nueva y regenera la base. Son milisegundos para la base, más el arranque de Python.
 
 ## API
 
@@ -109,6 +143,7 @@ app/
 data/tup_plan2024.json   # fuente de verdad del plan de estudios
 scripts/cargar_plan.py   # valida el plan y genera la base
 tests/
+.python-version          # versión de Python (la usan Vercel y GitHub Actions)
 ```
 
 ## Decisiones de diseño
@@ -119,11 +154,9 @@ tests/
 - **Las reglas viven en un solo lugar.** El frontend no recalcula correlativas: le pregunta a la API. Así no hay dos implementaciones que puedan diferir.
 - **Sin datos personales en el servidor.** El progreso queda en el navegador del alumno.
 
-## Próximos pasos
+## Fuera del alcance
 
-- Deploy con una demo online.
-
-Fuera del alcance por ahora: login, cálculo de cuatrimestres restantes, equivalencias, Trabajo Final Integrador y otras carreras.
+Por ahora no incluye: login, cálculo de cuatrimestres restantes, equivalencias, Trabajo Final Integrador y otras carreras.
 
 ## Autor
 
