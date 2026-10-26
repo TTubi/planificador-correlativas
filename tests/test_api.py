@@ -87,6 +87,37 @@ def test_una_materia_inexistente_da_422_con_mensaje(cliente):
     assert respuesta.json() == {"detail": "Materias que no existen en el plan: [99]"}
 
 
+def test_devuelve_el_progreso_con_porcentaje_y_promedio(cliente):
+    respuesta = cliente.post(
+        "/api/evaluacion",
+        json={"estados": {"1": "aprobada", "2": "aprobada", "3": "regular"}, "notas": {"1": 8, "2": 7}},
+    )
+    assert respuesta.status_code == 200
+    assert respuesta.json()["progreso"] == {
+        "aprobadas": 2,
+        "total": 17,
+        "porcentaje": 11,
+        "promedio": 7.5,
+        "notas_cargadas": 2,
+    }
+
+
+def test_sin_notas_el_promedio_es_null(cliente):
+    respuesta = cliente.post("/api/evaluacion", json={"estados": {"1": "aprobada"}})
+    assert respuesta.json()["progreso"]["promedio"] is None
+
+
+def test_una_nota_fuera_de_escala_da_422(cliente):
+    respuesta = cliente.post("/api/evaluacion", json={"estados": {"1": "aprobada"}, "notas": {"1": 5}})
+    assert respuesta.status_code == 422
+
+
+def test_una_nota_de_una_materia_no_aprobada_da_422_con_mensaje(cliente):
+    respuesta = cliente.post("/api/evaluacion", json={"estados": {"1": "regular"}, "notas": {"1": 8}})
+    assert respuesta.status_code == 422
+    assert respuesta.json() == {"detail": "Notas inválidas: Programación I tiene nota pero no está aprobada"}
+
+
 # --- Plan --------------------------------------------------------------------
 
 
