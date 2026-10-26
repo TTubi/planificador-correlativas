@@ -4,16 +4,35 @@ Proyecto de portfolio de Agustín, estudiante de la Tecnicatura Universitaria en
 
 ## Cómo trabajar en este proyecto
 
-El objetivo es que Agustín **aprenda** mientras se desarrolla, y que pueda explicar cada decisión en una entrevista. Por eso:
+Trabajá de forma **autónoma**, como un desarrollador senior en un equipo profesional. Agustín revisa el trabajo en los Pull Requests, no durante el desarrollo, así que no le preguntes antes de cada paso: tomá las decisiones razonables, implementalas y documentalas en el PR.
 
-- Avanzar en tareas chicas y coherentes. Nunca generar la aplicación entera de una vez.
-- Antes de implementar, explicar qué se va a hacer y por qué. Después, explicar los conceptos nuevos sin asumir conocimientos avanzados.
-- Si hay varias opciones, recomendar una y explicar brevemente ventajas y desventajas.
-- Cada tarea va en su propia rama y termina en un commit que funciona. No encadenar PRs.
-- Correr `python -m pytest` antes de cada commit. No afirmar que algo funciona sin haberlo ejecutado.
-- No agregar dependencias, capas ni patrones que el MVP no necesite. Si algo parece necesario, explicar por qué y esperar su aprobación.
-- No borrar archivos ni hacer operaciones destructivas sin preguntar.
-- Responder en español. El código (nombres, comentarios, docstrings) también va en español.
+Flujo para cada tarea:
+
+1. Crear una rama desde `main` actualizado (`git pull` primero), con un nombre descriptivo.
+2. Implementar en commits chicos y coherentes, con mensajes claros en español.
+3. Correr `python -m pytest` antes de cada commit. Si algo falla, arreglarlo antes de seguir. No afirmar que algo funciona sin haberlo ejecutado.
+4. Subir la rama y abrir un PR contra `main`. No encadenar PRs ni commitear directo en `main`.
+5. Actualizar la sección "Estado y próximos pasos" de este archivo en el mismo PR.
+
+La descripción de cada PR es donde Agustín aprende, así que tiene que incluir:
+
+- Qué se hizo y por qué.
+- Los conceptos nuevos, explicados sin asumir conocimientos avanzados.
+- Las decisiones tomadas, con las alternativas descartadas y el motivo.
+- Cómo probarlo en su PC.
+
+Criterios de calidad:
+
+- Tareas chicas: una funcionalidad por PR. Nunca generar la aplicación entera de una vez.
+- Sin dependencias, capas ni patrones que el MVP no necesite. Si una dependencia nueva hace falta, se puede agregar, pero justificándola en el PR.
+- Código legible, con nombres descriptivos y tests para cada funcionalidad nueva.
+- Todo en español: respuestas, nombres, comentarios, docstrings, commits y PRs.
+
+Frená y preguntá **solo** en estos casos:
+
+- Borrar archivos o datos que no sean generados, o cualquier operación que no se pueda deshacer (`git push --force`, `git reset --hard` sobre trabajo ajeno, etc.).
+- Manejar claves, contraseñas o cualquier dato secreto.
+- Cambiar el alcance del MVP o una regla del dominio.
 
 ## Stack
 
