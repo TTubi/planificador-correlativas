@@ -106,9 +106,10 @@ Hecho:
 7. GitHub Actions (`.github/workflows/tests.yml`): `pytest` corre en cada PR y en cada push a `main`, en Windows y en Linux.
 8. README con captura, cómo correrlo, API y decisiones de diseño.
 9. Diseño visual: colores con variables CSS, modo oscuro, resumen con barra de progreso, leyenda y contraste WCAG AA.
+10. Deploy en Vercel: <https://planificador-correlativas.vercel.app/>. La base se genera sola al arrancar, su ruta se configura con `PLANIFICADOR_DB` (en Vercel, `/tmp/planificador.db`), la versión de Python está en `.python-version` y el README explica el deploy. Cada push a `main` publica una versión nueva.
 
 Siguiente:
 
-10. Deploy y lanzamiento en Vercel. Ya resuelto: la base se genera sola al arrancar, su ruta se configura con `PLANIFICADOR_DB`, la versión de Python está en `.python-version` y el README explica el deploy. Falta que Agustín cree el proyecto en Vercel y sumar el link de la demo al README.
+11. Lanzamiento: post en LinkedIn (a cargo de Agustín).
 
 Queda fuera del MVP: login, cálculo de cuatrimestres restantes, equivalencias, Trabajo Final Integrador (se agrega como caso especial más adelante), tabla `carreras` (se agrega cuando haya una segunda carrera) e IA.

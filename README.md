@@ -4,6 +4,8 @@
 
 App web para estudiantes de la **Tecnicatura Universitaria en Programación (UTN, plan 2024)**. Marcás qué materias tenés regulares o aprobadas y te muestra qué podés cursar, qué podés rendir, qué está bloqueado y qué te falta para desbloquearlo.
 
+**Demo online:** <https://planificador-correlativas.vercel.app/>
+
 ![Captura del planificador](docs/captura.png)
 
 ## Qué hace
@@ -94,7 +96,7 @@ Vercel detecta la app FastAPI en `app/main.py` y la publica como una función se
    |---|---|
    | `PLANIFICADOR_DB` | `/tmp/planificador.db` |
 
-4. Tocá **Deploy**. En uno o dos minutos te da una URL del estilo `https://planificador-correlativas.vercel.app`.
+4. Tocá **Deploy**. En uno o dos minutos te da la URL pública. La demo de este repo está en <https://planificador-correlativas.vercel.app/>.
 
 Desde ahí, cada push a `main` publica una versión nueva, y cada PR recibe su propia URL de vista previa.
 
@@ -152,11 +154,9 @@ tests/
 - **Las reglas viven en un solo lugar.** El frontend no recalcula correlativas: le pregunta a la API. Así no hay dos implementaciones que puedan diferir.
 - **Sin datos personales en el servidor.** El progreso queda en el navegador del alumno.
 
-## Próximos pasos
+## Fuera del alcance
 
-- Publicar la demo en Vercel y sumar el link a este README.
-
-Fuera del alcance por ahora: login, cálculo de cuatrimestres restantes, equivalencias, Trabajo Final Integrador y otras carreras.
+Por ahora no incluye: login, cálculo de cuatrimestres restantes, equivalencias, Trabajo Final Integrador y otras carreras.
 
 ## Autor
 
