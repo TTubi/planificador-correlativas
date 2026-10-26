@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 
 from app.database import db
 from app.main import app
-from app.routes.evaluacion import obtener_plan
+from app.routes.dependencias import obtener_plan
 from scripts.cargar_plan import cargar
 
 
@@ -85,3 +85,41 @@ def test_una_materia_inexistente_da_422_con_mensaje(cliente):
     respuesta = cliente.post("/api/evaluacion", json={"estados": {"99": "aprobada"}})
     assert respuesta.status_code == 422
     assert respuesta.json() == {"detail": "Materias que no existen en el plan: [99]"}
+
+
+# --- Plan --------------------------------------------------------------------
+
+
+def test_devuelve_el_plan_con_nivel_y_correlativas(cliente):
+    respuesta = cliente.get("/api/plan")
+    assert respuesta.status_code == 200
+    materias = {m["numero"]: m for m in respuesta.json()["materias"]}
+    assert len(materias) == 17
+    assert materias[13] == {
+        "numero": 13,
+        "nombre": "Programación IV",
+        "nivel": 2,
+        "regulares": [9, 10, 11],
+        "aprobadas": [5, 7],
+    }
+
+
+# --- Frontend ----------------------------------------------------------------
+
+
+def test_la_raiz_sirve_el_frontend(cliente):
+    respuesta = cliente.get("/")
+    assert respuesta.status_code == 200
+    assert "text/html" in respuesta.headers["content-type"]
+    assert '<script src="app.js"' in respuesta.text
+
+
+def test_sirve_los_archivos_del_frontend(cliente):
+    assert cliente.get("/app.js").status_code == 200
+    assert cliente.get("/estilos.css").status_code == 200
+
+
+def test_la_api_no_queda_tapada_por_el_frontend(cliente):
+    # El frontend está montado en "/", que atrapa cualquier ruta.
+    # Si se registrara antes que los routers, /health devolvería 404.
+    assert cliente.get("/health").json() == {"status": "ok"}

@@ -1,0 +1,56 @@
+/* Estilos mínimos para que el plan se lea bien.
+   El diseño definitivo queda para la etapa 7. */
+
+body {
+    font-family: system-ui, sans-serif;
+    margin: 0 auto;
+    max-width: 960px;
+    padding: 16px;
+    color: #1f2933;
+    background: #f5f7fa;
+}
+
+header p {
+    margin-top: -8px;
+    color: #52606d;
+}
+
+.nivel h2 {
+    border-bottom: 2px solid #cbd2d9;
+    padding-bottom: 4px;
+}
+
+.materias {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    padding: 0;
+    list-style: none;
+}
+
+.materia {
+    background: #fff;
+    border: 1px solid #cbd2d9;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.materia h3 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+}
+
+.materia .numero {
+    color: #7b8794;
+    margin-right: 4px;
+}
+
+.requisitos {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #52606d;
+}
+
+.mensaje.error {
+    color: #b42318;
+}

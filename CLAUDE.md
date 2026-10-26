@@ -46,9 +46,11 @@ Frená y preguntá **solo** en estos casos:
 
 ```
 app/
-├── main.py                 # app FastAPI: registra los routers
-├── routes/                 # endpoints: health.py, evaluacion.py (POST /api/evaluacion)
+├── main.py                 # app FastAPI: registra los routers y monta el frontend
+├── routes/                 # endpoints: health, plan (GET /api/plan), evaluacion (POST /api/evaluacion)
+│   └── dependencias.py     # obtener_plan(), reemplazable en los tests
 ├── schemas/                # modelos Pydantic de la API
+├── static/                 # frontend: index.html, estilos.css, app.js
 ├── services/
 │   ├── plan.py             # Materia y validación del plan (ciclos, referencias)
 │   └── correlativas.py     # lógica pura: evaluar_plan()
@@ -92,9 +94,11 @@ Hecho:
 3. Lógica de cursar, rendir y faltantes, con tests.
 4. API: `POST /api/evaluacion` recibe `{"estados": {"1": "aprobada"}}` y devuelve `evaluar_plan()`. Esquemas Pydantic, `/health` en `routes/` y tests con `TestClient`.
 
+5a. `GET /api/plan` y frontend servido por FastAPI que muestra el plan por año con sus correlativas.
+
 Siguiente:
 
-5. Frontend: vista del plan por año (la respuesta todavía no incluye `nivel`: agregarlo o sumar `GET /api/plan`), marcar estados, `localStorage` y resultados.
+5b. Frontend: marcar estados, guardarlos en `localStorage`, llamar a `/api/evaluacion` y mostrar qué se puede cursar, rendir y qué falta.
 6. Materias llave: cuántas materias desbloquea cada una, directa e indirectamente.
 7. Diseño, README y GitHub Actions.
 8. Deploy y lanzamiento.

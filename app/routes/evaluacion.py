@@ -1,24 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.database import db
+from app.routes.dependencias import obtener_plan
 from app.schemas.evaluacion import EstadoAlumno, ResultadoEvaluacion
 from app.services.correlativas import evaluar_plan
 from app.services.plan import Materia
 
 router = APIRouter(prefix="/api", tags=["Evaluación"])
-
-
-def obtener_plan() -> list[Materia]:
-    """Dependencia que lee el plan de la base.
-
-    El endpoint la pide con `Depends` en lugar de llamarla directamente.
-    Así, en los tests se puede reemplazar por otra que use una base temporal.
-    """
-    conexion = db.conectar()
-    try:
-        return db.obtener_materias(conexion)
-    finally:
-        conexion.close()
 
 
 @router.post("/evaluacion", response_model=ResultadoEvaluacion)
