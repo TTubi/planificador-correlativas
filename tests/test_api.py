@@ -102,6 +102,16 @@ def test_devuelve_el_progreso_con_porcentaje_y_promedio(cliente):
     }
 
 
+def test_devuelve_un_mensaje_de_feedback(cliente):
+    respuesta = cliente.post(
+        "/api/evaluacion",
+        json={"estados": {"1": "aprobada", "2": "aprobada", "3": "regular"}, "notas": {"1": 8, "2": 7}},
+    )
+    assert respuesta.json()["mensaje"] == (
+        "Vas sumando: ya tenés el 11% de la carrera. ¡Paso a paso! Tu promedio es 7,5, ¡muy bien!"
+    )
+
+
 def test_sin_notas_el_promedio_es_null(cliente):
     respuesta = cliente.post("/api/evaluacion", json={"estados": {"1": "aprobada"}})
     assert respuesta.json()["progreso"]["promedio"] is None
