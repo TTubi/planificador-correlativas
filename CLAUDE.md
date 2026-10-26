@@ -95,10 +95,10 @@ Hecho:
 4. API: `POST /api/evaluacion` recibe `{"estados": {"1": "aprobada"}}` y devuelve `evaluar_plan()`. Esquemas Pydantic, `/health` en `routes/` y tests con `TestClient`.
 
 5a. `GET /api/plan` y frontend servido por FastAPI que muestra el plan por año con sus correlativas.
+5b. Frontend: marcar estados, guardarlos en `localStorage`, llamar a `/api/evaluacion` y mostrar qué se puede cursar, rendir y qué falta.
 
 Siguiente:
 
-5b. Frontend: marcar estados, guardarlos en `localStorage`, llamar a `/api/evaluacion` y mostrar qué se puede cursar, rendir y qué falta.
 6. Materias llave: cuántas materias desbloquea cada una, directa e indirectamente.
 7. Diseño, README y GitHub Actions.
 8. Deploy y lanzamiento.

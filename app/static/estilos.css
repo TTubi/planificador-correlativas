@@ -15,6 +15,23 @@ header p {
     color: #52606d;
 }
 
+header .ayuda {
+    margin-top: 0;
+    font-size: 0.9rem;
+}
+
+#resumen {
+    background: #fff;
+    border: 1px solid #cbd2d9;
+    border-radius: 8px;
+    padding: 12px;
+    font-weight: 600;
+}
+
+#resumen:empty {
+    display: none;
+}
+
 .nivel h2 {
     border-bottom: 2px solid #cbd2d9;
     padding-bottom: 4px;
@@ -31,8 +48,20 @@ header p {
 .materia {
     background: #fff;
     border: 1px solid #cbd2d9;
+    border-left-width: 6px;
     border-radius: 8px;
     padding: 12px;
+}
+
+/* El color del borde izquierdo resume la situación de la materia. */
+.materia.cursable { border-left-color: #2f9e44; }
+.materia.rendible { border-left-color: #1c7ed6; }
+.materia.bloqueada { border-left-color: #e8590c; }
+.materia.aprobada { border-left-color: #868e96; background: #f1f3f5; }
+
+.materia select {
+    margin-bottom: 8px;
+    font: inherit;
 }
 
 .materia h3 {
@@ -50,6 +79,16 @@ header p {
     font-size: 0.875rem;
     color: #52606d;
 }
+
+.resultado {
+    margin: 8px 0 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.cursable .resultado { color: #2b8a3e; }
+.rendible .resultado { color: #1864ab; }
+.bloqueada .resultado { color: #c2410c; }
 
 .mensaje.error {
     color: #b42318;
